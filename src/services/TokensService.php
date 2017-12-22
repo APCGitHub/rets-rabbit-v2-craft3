@@ -58,10 +58,10 @@ class TokensService extends Component
 
 	            RetsRabbit::$plugin->cache->set('access_token', $token, $ttl, true);
 	        } else {
-	        	RetsRabbitPlugin::log('Could not fetch the access token.', LogLevel::Error);
+	        	Craft::warning('Could not fetch the access token.', __METHOD__);
 	        }
 		} catch (\Exception $e) {
-			RetsRabbitPlugin::log($e->getMessage(), LogLevel::Error);
+			Craft::error($e->getMessage(), __METHOD__);
 		}
 
         return $token;
