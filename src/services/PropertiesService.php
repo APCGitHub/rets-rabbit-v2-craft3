@@ -63,7 +63,7 @@ class PropertiesService extends Component
 			$contents = $res->getResponse();
 
 			if(isset($contents['error']) && isset($contents['error']['code'])) {
-				RetsRabbitPlugin::log('A permission error occurred.', LogLevel::Error);
+				Craft::warning('A permission error occurred.', __METHOD__);
 				
 				$code = $contents['error']['code'];
 
@@ -73,7 +73,7 @@ class PropertiesService extends Component
 					if(!is_null($success)) {
 						$res = $this->resource->search($params);
 					} else {
-						RetsRabbitPlugin::log('Could not refresh the token during a search.', LogLevel::Error);
+						Craft::error('Could not refresh the token during a search.', __METHOD__);
 					}
 				}
 			}
@@ -94,7 +94,7 @@ class PropertiesService extends Component
 			$contents = $res->getResponse();
 
 			if(isset($contents['error']) && isset($contents['error']['code'])) {
-				RetsRabbitPlugin::log('A permission error occurred.', LogLevel::Error);
+				Craft::warning('A permission error occurred.', __METHOD__);
 				
 				$code = $contents['error']['code'];
 
@@ -104,7 +104,7 @@ class PropertiesService extends Component
 					if(!is_null($success)) {
 						$res = $this->resource->single($id, $params);
 					} else {
-						RetsRabbitPlugin::log('Could not refresh the token during property lookup.', LogLevel::Error);
+						Craft::error('Could not refresh the token during property lookup.', __METHOD__);
 					}
 				}
 			}
