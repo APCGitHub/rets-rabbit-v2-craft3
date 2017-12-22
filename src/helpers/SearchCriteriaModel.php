@@ -2,7 +2,7 @@
 
 namespace anecka\retsrabbit\helpers;
 
-class RetsRabbit_SearchCriteriaModel
+class SearchCriteriaModel
 {
 	/**
 	 * @var array
