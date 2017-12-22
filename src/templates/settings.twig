@@ -1,0 +1,50 @@
+{% import "_includes/forms" as Forms %}
+
+<div class="grid" data-cols="2">
+	<div class="item" data-colspan="1">
+		<h2>API Settings</h2>
+		{{ Forms.textField({
+			label: 'Client ID'|t,
+			id: 'client_id',
+			name: 'clientId',
+			instructions: 'Enter your Client ID from your Rets Rabbit dashboard',
+			value: settings.clientId,
+			errors: settings.getErrors('clientId')
+		}) }}
+
+		{{ Forms.textField({
+			label: 'Client Secret'|t,
+			id: 'client_secret',
+			name: 'clientSecret',
+			instructions: 'Enter your Client Secret from your Rets Rabbit dashboard',
+			value: settings.clientSecret,
+			errors: settings.getErrors('clientSecret')
+		}) }}
+
+		{{ Forms.textfield({
+			label: 'API Endpoint'|t,
+			id: 'api_endpoint',
+			name: 'apiEndpoint',
+			instructions: 'Override the default endpoint. Only use if you know what you are doing.',
+			value: settings.apiEndpoint,
+			errors: settings.getErrors('apiEndpoint')
+		}) }}
+	</div>
+	<div class="item" data-colspan="1">
+		<h2>Statuses <a style="float: right" href="{{actionUrl('retsRabbit/tokens/refresh')}}" class="btn submit">Refresh</a></h2>
+		<div>
+			{% if tokenExists %}
+				<span class="status live"></span><span>An access token has been fetched.</span>
+			{% else %}
+				<span class="status disabled"></span><span>An access token has not been fetched.</span>
+			{% endif %}
+		</div>
+		<div>
+			{% if canHitApi %}
+				<span class="status live"></span><span>Able to hit the Rets Rabbit API.</span>
+			{% else %}
+				<span class="status disabled"></span><span>Not able to hit the Rets Rabbit API.</span>
+			{% endif %}
+		</div>
+	</div>
+</div>
