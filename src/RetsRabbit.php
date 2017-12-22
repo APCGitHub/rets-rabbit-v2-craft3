@@ -96,6 +96,17 @@ class RetsRabbit extends Plugin
             }
         );
 
+        /**
+         * Set Plugin Components
+         */
+        $this->setComponents([
+            "cache"      => anecka\retsrabbit\services\CacheService::class,
+            "forms"      => anecka\retsrabbit\services\FormsService::class,
+            "properties" => anecka\retsrabbit\services\PropertiesService::class,
+            "searches"   => anecka\retsrabbit\services\SearchesService::class,
+            "tokens"     => anecka\retsrabbit\services\TokensService::class,
+        ]);
+
 /**
  * Logging in Craft involves using one of the following methods:
  *
