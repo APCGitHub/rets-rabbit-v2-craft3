@@ -2,8 +2,9 @@
 
 namespace anecka\retsrabbit\variables;
 
-use anecka\retsRabbit\transformers\PropertyTransformer;
+use anecka\retsrabbit\RetsRabbit;
 use anecka\retsRabbit\serializers\RetsRabbitArraySerializer;
+use anecka\retsRabbit\transformers\PropertyTransformer;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
@@ -37,21 +38,21 @@ class PropertiesVariable
 	 * @param  $id string
 	 * @return array
 	 */
-	public function find($id = '', $resoParams = array(), $useCache = false, $cacheDuration = null)
+	public function find($id = '', $resoParams = [], $useCache = false, $cacheDuration = null)
 	{
 		$cacheKey = md5($id . serialize($resoParams));
 		$cacheKey = 'properties/' . hash('sha256', $cacheKey);
-		$data = array();
+		$data = [];
 		$error = false;
 
 		//See if fetching from cache
 		if($useCache) {
-			$data = craft()->retsRabbit_cache->get($cacheKey);
+			$data = RetsRabbit::$plugin->cache->get($cacheKey);
 		}
 
 		//Check if any result pulled from cache
 		if(is_null($data) || empty($data)) {
-			$res = craft()->retsRabbit_properties->find($id, $resoParams);
+			$res = RetsRabbit::$plugin->properties->find($id, $resoParams);
 
 			if(!$res->didSucceed()) {
 				$error = true;
@@ -61,7 +62,7 @@ class PropertiesVariable
 				if($useCache) {
 					$ttl = $cacheDuration ?: $this->cacheDuration;
 
-					craft()->retsRabbit_cache->set($cacheKey, $data, $ttl);
+					RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
 				}
 			}
 		}
@@ -70,7 +71,7 @@ class PropertiesVariable
 
 		if(!$error) {
 			if(empty($data)) {
-				$viewData = array();
+				$viewData = [];
 			} else {
 				$resources = new Item($data, new PropertyTransformer);
         		$viewData = $this->fractal->createData($resources)->toArray();
@@ -88,20 +89,20 @@ class PropertiesVariable
 	 * @param  $cacheDuration mixed
 	 * @return array
 	 */
-	public function query($params = array(), $useCache = false, $cacheDuration = null)
+	public function query($params = [], $useCache = false, $cacheDuration = null)
 	{
 		$cacheKey = 'searches/' . hash('sha256', serialize($params));
-		$data = array();
+		$data = [];
 		$error = false;
 
 		//See if fetching from cache
 		if($useCache) {
-			$data = craft()->retsRabbit_cache->get($cacheKey);
+			$data = RetsRabbit::$plugin->cache->get($cacheKey);
 		}
 
 		//Check if any result pulled from cache
 		if(is_null($data) || empty($data)) {
-			$res = craft()->retsRabbit_properties->search($params);
+			$res = RetsRabbit::$plugin->properties->search($params);
 
 			if(!$res->didSucceed()) {
 				$error = true;
@@ -111,7 +112,7 @@ class PropertiesVariable
 				if($useCache) {
 					$ttl = $cacheDuration ?: $this->cacheDuration;
 
-					craft()->retsRabbit_cache->set($cacheKey, $data, $ttl);
+					RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
 				}
 			}
 		}
@@ -120,7 +121,7 @@ class PropertiesVariable
 
 		if(!$error) {
 			if(empty($data)) {
-				$viewData = array();
+				$viewData = [];
 			} else {
 				$resources = new Collection($data, new PropertyTransformer);
         		$viewData = $this->fractal->createData($resources)->toArray();
@@ -138,7 +139,7 @@ class PropertiesVariable
 	 * @param  mixed $cacheDuration
 	 * @return array
 	 */
-	public function search($id = '', $overrides = array(), $useCache = false, $cacheDuration = null)
+	public function search($id = '', $overrides = [], $useCache = false, $cacheDuration = null)
 	{
 		$search = craft()->retsRabbit_searches->getById($id);
 
@@ -156,16 +157,16 @@ class PropertiesVariable
 				$params['$skip'] = ($currentPage - 1) * $params['$top'];
 			}
 			$cacheKey = 'searches/' . hash('sha256', serialize($params));
-			$data = array();
+			$data = [];
 			$error = false;
 
 			//See if fetching from cache
 			if($useCache) {
-				$data = craft()->retsRabbit_cache->get($cacheKey);
+				$data = RetsRabbit::$plugin->cache->get($cacheKey);
 			}
 
 			if(is_null($data) || empty($data)) {
-				$res = craft()->retsRabbit_properties->search($params);
+				$res = RetsRabbit::$plugin->properties->search($params);
 
 				if(!$res->didSucceed()) {
 					$error = true;
@@ -175,7 +176,7 @@ class PropertiesVariable
 					if($useCache) {
 						$ttl = $cacheDuration ?: $this->cacheDuration;
 
-						craft()->retsRabbit_cache->set($cacheKey, $data, $ttl);
+						RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
 					}
 				}
 			}
@@ -184,7 +185,7 @@ class PropertiesVariable
 
 			if(!$error) {
 				if(empty($data)) {
-					$viewData = array();
+					$viewData = [];
 				} else {
 					$resources = new Collection($data, new PropertyTransformer);
 	        		$viewData = $this->fractal->createData($resources)->toArray();
