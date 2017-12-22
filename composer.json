@@ -1,0 +1,52 @@
+{
+    "name": "anecka/rets-rabbit",
+    "description": "Display real estate listings in your craft site in a simple and intuitive way.",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "rets rabbit"
+    ],
+    "support": {
+        "docs": "https://github.com/rets-rabbit-v2-craft3/rets-rabbit/blob/master/README.md",
+        "issues": "https://github.com/rets-rabbit-v2-craft3/rets-rabbit/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anecka, LLC",
+            "homepage": "http://anecka.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1",
+        "league/fractal": "^0.16.0",
+        "rets-rabbit/cms-plugin-core": "^1.0"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+          "anecka\\retsrabbit\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Rets Rabbit",
+        "handle": "rets-rabbit",
+        "schemaVersion": "1.0.0",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/rets-rabbit-v2-craft3/rets-rabbit/master/CHANGELOG.md",
+        "components": {
+            "cacheService": "anecka\\retsrabbit\\services\\CacheService"
+        },
+        "class": "anecka\\retsrabbit\\RetsRabbit"
+    }
+}
