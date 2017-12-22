@@ -45,7 +45,11 @@
         "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/rets-rabbit-v2-craft3/rets-rabbit/master/CHANGELOG.md",
         "components": {
-            "cacheService": "anecka\\retsrabbit\\services\\CacheService"
+            "cache": "anecka\\retsrabbit\\services\\CacheService",
+            "forms": "anecka\\retsrabbit\\services\\FormsService",
+            "properties": "anecka\\retsrabbit\\services\\PropertiesService",
+            "searches": "anecka\\retsrabbit\\services\\SearchesService",
+            "tokens": "anecka\\retsrabbit\\services\\TokensService",
         },
         "class": "anecka\\retsrabbit\\RetsRabbit"
     }
