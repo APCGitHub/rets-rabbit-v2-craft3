@@ -1,12 +1,4 @@
 <?php
-/**
- * Rets Rabbit plugin for Craft CMS 3.x
- *
- * Display real estate listings in your craft site in a simple and intuitive way.
- *
- * @link      http://anecka.com
- * @copyright Copyright (c) 2017 Anecka, LLC
- */
 
 namespace anecka\retsrabbit\services;
 
