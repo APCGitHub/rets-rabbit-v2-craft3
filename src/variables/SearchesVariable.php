@@ -2,6 +2,9 @@
 
 namespace anecka\retsrabbit\variables;
 
+use anecka\retsrabbit\helpers\SearchCriteriaModel;
+use anecka\retsrabbit\RetsRabbit;
+
 class SearchesVariable
 {
 	/**
@@ -12,13 +15,17 @@ class SearchesVariable
 	 */
 	public function exists($id = 0)
 	{
-		$search = craft()->retsRabbit_searches->getById($id);
+		$search = RetsRabbit::$plugin->searches->getById($id);
 
 		return !is_null($search);
 	}
 
+	/**
+	 * Get a search SearchCriteriaModel
+	 * @return SearchCriteriaModel
+	 */
 	public function criteria()
 	{
-		return new RetsRabbit_SearchCriteriaModel;
+		return new SearchCriteriaModel;
 	}
 }
