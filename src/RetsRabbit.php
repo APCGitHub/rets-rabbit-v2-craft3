@@ -46,6 +46,12 @@ class RetsRabbit extends Plugin
      */
     public static $plugin;
 
+    /**
+     * Has a control panel
+     * @var boolean
+     */
+    public $hasCpSettings = true;
+
     // Public Methods
     // =========================================================================
 
@@ -118,7 +124,22 @@ class RetsRabbit extends Plugin
         );
     }
 
+    /**
+     * Create the settings model
+     * @return \anecka\retsrabbit\Settings
+     */
+    public function createSettingsModel()
+    {
+        return new \anecka\retsrabbit\Settings();
+    }
+
     // Protected Methods
     // =========================================================================
-
+    protected function settingsHtml()
+    {
+        return Craft::$app->getView()->renderTemplate('rets-rabbit/settings', [
+                'settings' => $this->getSettings()
+            ]
+        )
+    }
 }
