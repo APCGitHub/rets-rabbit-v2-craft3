@@ -2,6 +2,8 @@
 
 namespace anecka\retsrabbit\services;
 
+use Craft;
+
 use craft\base\Component;
 
 class CacheService extends Component
@@ -24,10 +26,10 @@ class CacheService extends Component
 		$key = $this->basePath . $id;
 
 		if($secure) {
-			$value = craft()->security->encrypt($value);
+			$value = Craft::$app->security->encrypt($value);
 		}
 
-		return craft()->cache->set($key, $value, $expire);
+		return Craft::$app->cache->set($key, $value, $expire);
 	}
 
 	/**
@@ -38,10 +40,10 @@ class CacheService extends Component
 	public function get($id, $secure = false)
 	{
 		$key = $this->basePath . $id;
-		$value = craft()->cache->get($key);
+		$value = Craft::$app->cache->get($key);
 
 		if($value && $secure) {
-			$value = craft()->security->decrypt($value);
+			$value = Craft::$app->security->decrypt($value);
 		}
 
 		return $value;
@@ -55,6 +57,6 @@ class CacheService extends Component
 	{
 		$key = $this->basePath . $id;
 
-		return craft()->cache->delete($key);		
+		return Craft::$app->cache->delete($key);		
 	}
 }
