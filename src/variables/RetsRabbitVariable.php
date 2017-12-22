@@ -35,7 +35,7 @@ class RetsRabbitVariable
      */
     public function __call($name, $arguments)
     {
-        $className = "anecka\\retsrabbit\\" . ucfirst($name) . "Variable";
+        $className = "anecka\\retsrabbit\\services\\" . ucfirst($name) . "Variable";
 
         return (class_exists($className)) ? new $className() : null;
     }
