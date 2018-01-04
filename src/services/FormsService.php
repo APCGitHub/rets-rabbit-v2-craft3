@@ -2,9 +2,10 @@
 
 namespace anecka\retsrabbit\services;
 
+use Anecka\RetsRabbit\Core\Query\QueryParser;
 use Craft;
+
 use craft\base\Component;
-use RetsRabbit\Query\QueryParser;
 
 class FormsService extends Component
 {
@@ -20,8 +21,6 @@ class FormsService extends Component
 		$reso = array_filter($reso, function ($value) {
 			return !empty($value);
 		});
-
-		RetsRabbitPlugin::log(print_r($reso, true));
 
 		return $reso;
 	}
