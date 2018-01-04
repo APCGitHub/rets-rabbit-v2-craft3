@@ -2,7 +2,6 @@
 
 namespace anecka\retsrabbit\Serializers;
 
-
 use League\Fractal\Serializer\ArraySerializer;
 
 class RetsRabbitArraySerializer extends ArraySerializer
