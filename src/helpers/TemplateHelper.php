@@ -2,40 +2,43 @@
 
 namespace anecka\retsrabbit\helpers;
 
-
-use anecka\retsrabbit\transformers\PropertyTransformer;
-use anecka\retsrabbit\serializers\RetsRabbitArraySerializer;
+use Craft;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
 
-class RetsRabbit_TemplateHelper
+use anecka\retsrabbit\models\SearchCriteriaModel;
+use anecka\retsrabbit\RetsRabbit;
+use anecka\retsrabbit\serializers\RetsRabbitArraySerializer;
+use anecka\retsrabbit\transformers\PropertyTransformer;
+
+class TemplateHelper
 {
 	/**
 	 * @param  integer $searchId
 	 * @param  array $resoParams
 	 * @return array
 	 */
-	public static function paginateProperties(RetsRabbit_SearchCriteriaModel $criteria)
+	public static function paginateProperties(SearchCriteriaModel $criteria)
 	{
 		if(is_null($criteria->getSearchId())) {
 			throw new \Exception("The search id was not supplied.");
 		}
 
 		$paginateV = new PaginateVariable;
-		$currentPage = craft()->request->getPageNum();
-		$search = craft()->retsRabbit_searches->getById($criteria->getSearchId());
+		$currentPage = Craft::$app->request->getPageNum();
+		$search = RetsRabbit::$plugin->searches->getById($criteria->getSearchId());
 		$viewData = null;
 		$fractal = new Manager();
 		$fractal->setSerializer(new RetsRabbitArraySerializer);
 
 		if($search) {
-			$savedSearchParams = json_decode($search->getAttribute('params'), true);
+			$savedSearchParams = json_decode($search->params, true);
 
 			//Count total related variables
 			$countParams = array_merge($savedSearchParams, array('$select' => $criteria->countMethod));
 			$countCacheKey = 'pagination/' . hash('sha256', serialize($countParams));
-			$total = craft()->retsRabbit_cache->get($countCacheKey);
+			$total = RetsRabbit::$plugin->cache->get($countCacheKey);
 			$perPage = $criteria->getPerPage();
 			$countError = false;
 
@@ -58,32 +61,32 @@ class RetsRabbit_TemplateHelper
 			}
 
 			$searchCacheKey = 'searches/' . hash('sha256', serialize($queryParams));
-			$data = craft()->retsRabbit_cache->get($searchCacheKey);
+			$data = RetsRabbit::$plugin->cache->get($searchCacheKey);
 			
 
 			//Try to fetch the search total
 			if(is_null($total) || $total === FALSE) {
-				$res = craft()->retsRabbit_properties->search($countParams);
+				$res = RetsRabbit::$plugin->properties->search($countParams);
 
 				if(!$res->didSucceed()) {
 					$countError = true;
 				} else {
 					$total = $res->getResponse()['@retsrabbit.total_results'];
 
-					craft()->retsRabbit_cache->set($countCacheKey, $total, 3600);
+					RetsRabbit::$plugin->cache->set($countCacheKey, $total, 3600);
 				}
 			}
 
 			//Try to fetch the search results
 			if(is_null($data) || empty($data)) {
-				$res = craft()->retsRabbit_properties->search($queryParams);
+				$res = RetsRabbit::$plugin->properties->search($queryParams);
 
 				if(!$res->didSucceed()) {
 					$searchError = true;
 				} else {
 					$data = $res->getResponse()['value'];
 
-					craft()->retsRabbit_cache->set($searchCacheKey, $data, 3600);
+					RetsRabbit::$plugin->cache->set($searchCacheKey, $data, 3600);
 				}
 			}
 
