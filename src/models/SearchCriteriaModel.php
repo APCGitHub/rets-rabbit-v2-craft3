@@ -1,8 +1,10 @@
 <?php
 
-namespace anecka\retsrabbit\helpers;
+namespace anecka\retsrabbit\models;
 
-class SearchCriteriaModel
+use craft\base\Model;
+
+class SearchCriteriaModel extends Model
 {
 	/**
 	 * @var array
