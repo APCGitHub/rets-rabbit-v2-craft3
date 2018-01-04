@@ -14,7 +14,7 @@ class SearchesRecord
 	 */
 	public static function tableName()
 	{
-		return 'retsrabbit_searches';
+		return '{{%rets_rabbit_searches}}';
 	}
 
 	/**
