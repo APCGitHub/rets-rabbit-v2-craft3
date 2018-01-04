@@ -98,19 +98,19 @@ class Install extends Migration
         $tablesCreated = false;
 
     // retsrabbit_retsrabbitrecord table
-        $tableSchema = Craft::$app->db->schema->getTableSchema('{{%retsrabbit_retsrabbitrecord}}');
+        $tableSchema = Craft::$app->db->schema->getTableSchema('{{%rets_rabbit_searches}}');
         if ($tableSchema === null) {
             $tablesCreated = true;
             $this->createTable(
-                '{{%retsrabbit_retsrabbitrecord}}',
+                '{{%rets_rabbit_searches}}',
                 [
-                    'id' => $this->primaryKey(),
-                    'dateCreated' => $this->dateTime()->notNull(),
-                    'dateUpdated' => $this->dateTime()->notNull(),
-                    'uid' => $this->uid(),
-                // Custom columns in the table
-                    'siteId' => $this->integer()->notNull(),
-                    'some_field' => $this->string(255)->notNull()->defaultValue(''),
+                    'id'            => $this->primaryKey(),
+                    'type'          => $this->string(32)->notNull()->defaultValue('property'),
+                    'params'        => $this->text(),
+                    'siteId'        => $this->integer()->notNull(),
+                    'dateCreated'   => $this->dateTime()->notNull(),
+                    'dateUpdated'   => $this->dateTime()->notNull(),
+                    'uid'           => $this->uid(),
                 ]
             );
         }
@@ -125,24 +125,6 @@ class Install extends Migration
      */
     protected function createIndexes()
     {
-    // retsrabbit_retsrabbitrecord table
-        $this->createIndex(
-            $this->db->getIndexName(
-                '{{%retsrabbit_retsrabbitrecord}}',
-                'some_field',
-                true
-            ),
-            '{{%retsrabbit_retsrabbitrecord}}',
-            'some_field',
-            true
-        );
-        // Additional commands depending on the db driver
-        switch ($this->driver) {
-            case DbConfig::DRIVER_MYSQL:
-                break;
-            case DbConfig::DRIVER_PGSQL:
-                break;
-        }
     }
 
     /**
@@ -152,16 +134,7 @@ class Install extends Migration
      */
     protected function addForeignKeys()
     {
-    // retsrabbit_retsrabbitrecord table
-        $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%retsrabbit_retsrabbitrecord}}', 'siteId'),
-            '{{%retsrabbit_retsrabbitrecord}}',
-            'siteId',
-            '{{%sites}}',
-            'id',
-            'CASCADE',
-            'CASCADE'
-        );
+
     }
 
     /**
@@ -181,6 +154,6 @@ class Install extends Migration
     protected function removeTables()
     {
     // retsrabbit_retsrabbitrecord table
-        $this->dropTableIfExists('{{%retsrabbit_retsrabbitrecord}}');
+        $this->dropTableIfExists('{{%rets_rabbit_searches}}');
     }
 }
