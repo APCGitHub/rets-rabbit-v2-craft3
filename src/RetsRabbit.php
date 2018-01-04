@@ -151,6 +151,6 @@ class RetsRabbit extends Plugin
         return Craft::$app->getView()->renderTemplate('rets-rabbit/settings', [
                 'settings' => $this->getSettings()
             ]
-        )
+        );
     }
 }
