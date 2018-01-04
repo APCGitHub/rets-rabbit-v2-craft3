@@ -2,12 +2,12 @@
 
 namespace anecka\retsrabbit\records;
 
-use anecka\retsrabbit\RetsRabbit;
-
 use Craft;
+
+use anecka\retsrabbit\RetsRabbit;
 use craft\db\ActiveRecord;
 
-class SearchesRecord
+class SearchRecord extends ActiveRecord
 {
 	/**
 	 * @return string
