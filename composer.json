@@ -24,7 +24,7 @@
     "require": {
         "craftcms/cms": "^3.0.0-RC4",
         "league/fractal": "^0.16.0",
-        "rets-rabbit/cms-plugin-core": "^1.0"
+        "rets-rabbit/cms-plugin-core": "^1.1"
     },
     "repositories": [
         {
