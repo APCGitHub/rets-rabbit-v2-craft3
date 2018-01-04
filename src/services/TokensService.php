@@ -2,12 +2,13 @@
 
 namespace anecka\retsrabbit\services;
 
+use Anecka\RetsRabbit\Core\ApiService;
+use Anecka\RetsRabbit\Core\Bridges\CraftBridge;
 use Craft;
 
 use anecka\retsrabbit\RetsRabbit;
 use craft\base\Component;
-use RetsRabbit\ApiService;
-use RetsRabbit\Bridges\CraftBridge;
+
 
 class TokensService extends Component
 {
