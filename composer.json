@@ -2,8 +2,7 @@
     "name": "anecka/rets-rabbit",
     "description": "Display real estate listings in your craft site in a simple and intuitive way.",
     "type": "craft-plugin",
-    "version": "1.0.0",
-    "minimum-stability": "dev",
+    "version": "0.0.1",
     "keywords": [
         "craft",
         "cms",
