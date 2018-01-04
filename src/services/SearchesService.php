@@ -6,7 +6,7 @@ use Craft;
 
 use craft\base\Component;
 
-class SearchesService
+class SearchesService extends Component
 {
 	/**
 	 * Create a new search model
@@ -48,7 +48,7 @@ class SearchesService
 	{
 		if($id = $model->getAttribute('id')) {
 			if (null === ($record = RetsRabbit_SearchRecord::model()->findById($id))) {
-                throw new Exception(Craft::t('Can\'t find search with ID "{id}"', array('id' => $id)));
+                throw new Exception(Craft::t('rets-rabbit', Can\'t find search with ID "{id}"', array('id' => $id)));
             }
 		} else {
 			$record = new RetsRabbit_SearchRecord;
