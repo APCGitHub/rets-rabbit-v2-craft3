@@ -3,7 +3,11 @@
 namespace anecka\retsrabbit\services;
 
 use Craft;
+use Exception;
 
+use anecka\retsrabbit\exceptions\InvalidSearchException;
+use anecka\retsrabbit\models\Search;
+use anecka\retsrabbit\records\SearchRecord;
 use craft\base\Component;
 
 class SearchesService extends Component
@@ -12,14 +16,16 @@ class SearchesService extends Component
 	 * Create a new search model
 	 * 
 	 * @param  array
-	 * @return BaseModel
+	 * @return Search
 	 */
 	public function newSearch($attributes = array())
 	{
-		$model = new RetsRabbit_SearchModel();
+		$model = new Search();
+		
 		if(isset($attributes['params'])) {
 			$attributes['params'] = json_encode($attributes['params']);
 		}
+
 		$model->setAttributes($attributes);
 
 		return $model;
@@ -29,7 +35,7 @@ class SearchesService extends Component
 	 * Create a new search model with a 'property' type
 	 * 
 	 * @param  array
-	 * @return BaseModel
+	 * @return Search
 	 */
 	public function newPropertySearch($attributes = array())
 	{
@@ -41,31 +47,51 @@ class SearchesService extends Component
 	/**
 	 * Save a search
 	 * 
-	 * @param  RetsRabbit_SearchModel
+	 * @param  Search
 	 * @return bool
 	 */
-	public function saveSearch(RetsRabbit_SearchModel &$model)
+	public function saveSearch(Search $model, bool $runValidation): bool
 	{
-		if($id = $model->getAttribute('id')) {
-			if (null === ($record = RetsRabbit_SearchRecord::model()->findById($id))) {
-                throw new Exception(Craft::t('rets-rabbit', Can\'t find search with ID "{id}"', array('id' => $id)));
-            }
+		if($runValidation && $model->validate()) {
+			Craft::info('Search not saved due to validation error.', __METHOD__);
+
+			return false;
+		}
+
+		if($model->id) {
+			$record = SearchRecord::find()
+				->where(['id' => $model->id])
+				->one();
+
+			if(!$record) {
+				throw new InvalidSearchException("No search exists with the ID '{$model->id}'");
+			}
+
+			$isNewSearch = false;
 		} else {
-			$record = new RetsRabbit_SearchRecord;
+			$record = new SearchRecord;
+			$isNewSearch = false;
 		}
 
 		$record->setAttributes($model->getAttributes());
 
-		if($record->save()) {
-			//for new records, update the id attr
-			$model->setAttribute('id', $record->getAttribute('id'));
+		$transaction = Craft::$app->getDb()->beginTransaction();
 
-			return true;
-		} else {
-			$model->addErrors($record->getErrors());
+		try {
+			$record->save();
 
-			return false;
+			if($isNewSearch) {
+				$model->id = $record->id;
+			}
+
+			$transaction->commit();
+		} catch (Exception $e) {
+			$transaction->rollBack();
+
+			throw $e;
 		}
+
+		return true;
 
 	}
 
@@ -73,14 +99,14 @@ class SearchesService extends Component
 	 * Find a search by id
 	 * 
 	 * @param  $id integer
-	 * @return BaseModel|null
+	 * @return Search|null
 	 */
 	public function getById($id = 0)
 	{
-		$record = RetsRabbit_SearchRecord::model()->findById($id);
+		$record = SearchRecord::findOne($id);
 
 		if($record) {
-			return RetsRabbit_SearchModel::populateModel($record);
+			return new Search($record->toArray());
 		}
 
 		return null;
@@ -90,10 +116,18 @@ class SearchesService extends Component
 	 * Delete a search by id
 	 * 
 	 * @param  $id integer
-	 * @return mixed
+	 * @return bool
 	 */
-	public function deleteById($id = 0)
+	public function deleteById($id = 0): bool
 	{
-		return RetsRabbit_SearchRecord::model()->deleteById($id);
+		$record = SearchRecord::findOne($id);
+
+		if(!$record) {
+			return true;
+		}
+
+		$record->delete();
+
+		return true;
 	}
 }
