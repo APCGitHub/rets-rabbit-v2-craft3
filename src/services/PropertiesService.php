@@ -2,12 +2,13 @@
 
 namespace anecka\retsrabbit\services;
 
-use anecka\retsrabbit\RetsRabbit;
+use Anecka\RetsRabbit\Core\ApiService;
+use Anecka\RetsRabbit\Core\Bridges\CraftBridge;
+use Anecka\RetsRabbit\Core\Resources\PropertiesResource;
 use Craft;
+
+use anecka\retsrabbit\RetsRabbit;
 use craft\base\Component;
-use RetsRabbit\ApiService;
-use RetsRabbit\Bridges\CraftBridge;
-use RetsRabbit\Resources\PropertiesResource;
 
 class PropertiesService extends Component
 {
