@@ -10,6 +10,9 @@
 
 namespace anecka\retsrabbit\controllers;
 
+use Craft;
+
+use anecka\retsrabbit\RetsRabbit;
 use craft\web\Controller;
 
 /**
@@ -21,13 +24,13 @@ use craft\web\Controller;
  * @package   RetsRabbit
  * @since     1.0.0
  */
-class RetsRabbit_PropertiesController extends Controller
+class PropertiesController extends Controller
 {
 	/**
 	 * Allow these endpoints to be hit by anonymous users
 	 * @var array
 	 */
-	protected $allowAnonymous = ['actionSearch'];
+	protected $allowAnonymous = ['search'];
 
 	/**
 	 * Handle a POST search by saving params into the DB and redirecting
@@ -39,19 +42,22 @@ class RetsRabbit_PropertiesController extends Controller
 	{
 		$this->requirePostRequest();
 
-		$data = craft()->request->getPost();
-		$resoParams = craft()->retsRabbit_forms->toReso($data);
-		$search = craft()->retsRabbit_searches->newPropertySearch(array(
+		$data = Craft::$app->getRequest();
+		$resoParams = RetsRabbit::$plugin->forms->toReso($data);
+		$search = RetsRabbit::$plugin->newPropertySearch(array(
 			'params' => $resoParams
 		));
 
-		if(craft()->retsRabbit_searches->saveSearch($search)) {
-			craft()->userSession->setNotice(Craft::t('Search saved'));
+		if(RetsRabbit::$plugin->saveSearch($search)) {
+			Craft::$app->user->setNotice(Craft::t('rets-rabbit', 'Search saved'));
 
-			$this->redirectToPostedUrl(array('searchId' => $search->id));
+			return $this->redirectToPostedUrl(array('searchId' => $search->id));
 		} else {
-			craft()->userSession->setError(Craft::t("Couldn't save search."));
-			craft()->urlManager->setRouteVariables(array('search' => $search));
+			Craft::$app->user->setError(Craft::t('rets-rabbit', "Couldn't save search."));
+
+			Craft::$app->urlManager->setRouteVariables(array(
+				'search' => $search
+			));
 		}
 	}
 }
