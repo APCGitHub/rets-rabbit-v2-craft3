@@ -2,7 +2,7 @@
 
 namespace anecka\retsrabbit\variables;
 
-use anecka\retsrabbit\helpers\SearchCriteriaModel;
+use anecka\retsrabbit\models\SearchCriteriaModel;
 use anecka\retsrabbit\RetsRabbit;
 
 class SearchesVariable
