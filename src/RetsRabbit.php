@@ -10,15 +10,15 @@
 
 namespace anecka\retsrabbit;
 
+use Craft;
+
 use anecka\retsrabbit\services\RetsRabbitService as RetsRabbitServiceService;
 use anecka\retsrabbit\variables\RetsRabbitVariable;
 use anecka\retsrabbit\twigextensions\RetsRabbitTwigExtension;
 
-use Craft;
 use craft\base\Plugin;
 use craft\services\Plugins;
 use craft\events\PluginEvent;
-use craft\web\UrlManager;
 use craft\web\twig\variables\CraftVariable;
 use craft\events\RegisterUrlRulesEvent;
 
