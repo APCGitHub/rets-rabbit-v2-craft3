@@ -10,9 +10,9 @@
 
 namespace anecka\retsrabbit\migrations;
 
-use anecka\retsrabbit\RetsRabbit;
-
 use Craft;
+
+use anecka\retsrabbit\RetsRabbit;
 use craft\config\DbConfig;
 use craft\db\Migration;
 
@@ -56,6 +56,7 @@ class Install extends Migration
     public function safeUp()
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
+
         if ($this->createTables()) {
             $this->createIndexes();
             $this->addForeignKeys();
@@ -96,11 +97,11 @@ class Install extends Migration
     protected function createTables()
     {
         $tablesCreated = false;
-
-    // retsrabbit_retsrabbitrecord table
         $tableSchema = Craft::$app->db->schema->getTableSchema('{{%rets_rabbit_searches}}');
+
         if ($tableSchema === null) {
             $tablesCreated = true;
+            
             $this->createTable(
                 '{{%rets_rabbit_searches}}',
                 [
