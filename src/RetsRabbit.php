@@ -10,12 +10,11 @@
 
 namespace anecka\retsrabbit;
 
-use Craft;
-
-use anecka\retsrabbit\services\RetsRabbitService as RetsRabbitServiceService;
+use anecka\retsrabbit\models\Settings;
 use anecka\retsrabbit\variables\RetsRabbitVariable;
 use anecka\retsrabbit\twigextensions\RetsRabbitTwigExtension;
 
+use Craft;
 use craft\base\Plugin;
 use craft\services\Plugins;
 use craft\events\PluginEvent;
@@ -30,8 +29,6 @@ use yii\base\Event;
  * @author    Anecka, LLC
  * @package   RetsRabbit
  * @since     1.0.0
- *
- * @property  RetsRabbitServiceService $retsRabbitService
  */
 class RetsRabbit extends Plugin
 {
@@ -72,7 +69,7 @@ class RetsRabbit extends Plugin
         self::$plugin = $this;
 
         // Add in our Twig extensions
-        Craft::$app->view->registerTwigExtension(new RetsRabbitTwigExtension());
+        Craft::$app->view->twig->addExtension(new RetsRabbitTwigExtension());
 
         // Register our variables
         Event::on(
@@ -100,31 +97,31 @@ class RetsRabbit extends Plugin
          * Set Plugin Components
          */
         $this->setComponents([
-            "cache"      => anecka\retsrabbit\services\CacheService::class,
-            "forms"      => anecka\retsrabbit\services\FormsService::class,
-            "properties" => anecka\retsrabbit\services\PropertiesService::class,
-            "searches"   => anecka\retsrabbit\services\SearchesService::class,
-            "tokens"     => anecka\retsrabbit\services\TokensService::class,
+            "cache"      => \anecka\retsrabbit\services\CacheService::class,
+            "forms"      => \anecka\retsrabbit\services\FormsService::class,
+            "properties" => \anecka\retsrabbit\services\PropertiesService::class,
+            "searches"   => \anecka\retsrabbit\services\SearchesService::class,
+            "tokens"     => \anecka\retsrabbit\services\TokensService::class,
         ]);
 
-/**
- * Logging in Craft involves using one of the following methods:
- *
- * Craft::trace(): record a message to trace how a piece of code runs. This is mainly for development use.
- * Craft::info(): record a message that conveys some useful information.
- * Craft::warning(): record a warning message that indicates something unexpected has happened.
- * Craft::error(): record a fatal error that should be investigated as soon as possible.
- *
- * Unless `devMode` is on, only Craft::warning() & Craft::error() will log to `craft/storage/logs/web.log`
- *
- * It's recommended that you pass in the magic constant `__METHOD__` as the second parameter, which sets
- * the category to the method (prefixed with the fully qualified class name) where the constant appears.
- *
- * To enable the Yii debug toolbar, go to your user account in the AdminCP and check the
- * [] Show the debug toolbar on the front end & [] Show the debug toolbar on the Control Panel
- *
- * http://www.yiiframework.com/doc-2.0/guide-runtime-logging.html
- */
+        /**
+         * Logging in Craft involves using one of the following methods:
+         *
+         * Craft::trace(): record a message to trace how a piece of code runs. This is mainly for development use.
+         * Craft::info(): record a message that conveys some useful information.
+         * Craft::warning(): record a warning message that indicates something unexpected has happened.
+         * Craft::error(): record a fatal error that should be investigated as soon as possible.
+         *
+         * Unless `devMode` is on, only Craft::warning() & Craft::error() will log to `craft/storage/logs/web.log`
+         *
+         * It's recommended that you pass in the magic constant `__METHOD__` as the second parameter, which sets
+         * the category to the method (prefixed with the fully qualified class name) where the constant appears.
+         *
+         * To enable the Yii debug toolbar, go to your user account in the AdminCP and check the
+         * [] Show the debug toolbar on the front end & [] Show the debug toolbar on the Control Panel
+         *
+         * http://www.yiiframework.com/doc-2.0/guide-runtime-logging.html
+         */
         Craft::info(
             Craft::t(
                 'rets-rabbit',
@@ -137,19 +134,29 @@ class RetsRabbit extends Plugin
 
     /**
      * Create the settings model
-     * @return \anecka\retsrabbit\Settings
+     * 
+     * @return Settings
      */
-    public function createSettingsModel()
+    protected function createSettingsModel()
     {
-        return new \anecka\retsrabbit\Settings();
+        return new Settings();
     }
 
     // Protected Methods
     // =========================================================================
-    protected function settingsHtml()
+    protected function settingsHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('rets-rabbit/settings', [
-                'settings' => $this->getSettings()
+        $valid = RetsRabbit::$plugin->tokens->isValid();
+		$canHitApi = RetsRabbit::$plugin->properties->search([
+			'$top' => 1
+        ]);
+        
+        return Craft::$app->view->renderTemplate(
+            'rets-rabbit/settings', 
+            [
+                'canHitApi'     => $canHitApi,
+                'settings'      => $this->getSettings(),
+                'tokenExists'   => $valid,
             ]
         );
     }
