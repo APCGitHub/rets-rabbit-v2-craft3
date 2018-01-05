@@ -4,9 +4,9 @@ namespace anecka\retsrabbit\services;
 
 use Anecka\RetsRabbit\Core\ApiService;
 use Anecka\RetsRabbit\Core\Bridges\CraftBridge;
-use Craft;
-
 use anecka\retsrabbit\RetsRabbit;
+
+use Craft;
 use craft\base\Component;
 
 

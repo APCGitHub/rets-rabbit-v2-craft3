@@ -5,9 +5,9 @@ namespace anecka\retsrabbit\services;
 use Anecka\RetsRabbit\Core\ApiService;
 use Anecka\RetsRabbit\Core\Bridges\CraftBridge;
 use Anecka\RetsRabbit\Core\Resources\PropertiesResource;
-use Craft;
-
 use anecka\retsrabbit\RetsRabbit;
+
+use Craft;
 use craft\base\Component;
 
 class PropertiesService extends Component
