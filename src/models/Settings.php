@@ -22,7 +22,7 @@ class Settings extends Model
 	 * Custom RR API Endpoint
 	 * @var string
 	 */
-	public $apiEndPoint;
+	public $apiEndpoint;
 
 	/**
 	 * @return array
