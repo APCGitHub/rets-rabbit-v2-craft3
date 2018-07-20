@@ -69,7 +69,7 @@ class RetsRabbit extends Plugin
         self::$plugin = $this;
 
         // Add in our Twig extensions
-        Craft::$app->view->twig->addExtension(new RetsRabbitTwigExtension());
+        Craft::$app->view->registerTwigExtension(new RetsRabbitTwigExtension());
 
         // Register our variables
         Event::on(
