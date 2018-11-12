@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection ALL */
+
 /**
  * Rets Rabbit plugin for Craft CMS 3.x
  *
@@ -32,9 +33,6 @@ use yii\base\Event;
  */
 class RetsRabbit extends Plugin
 {
-    // Static Properties
-    // =========================================================================
-
     /**
      * Static property that is an instance of this plugin class so that it can be accessed via
      * RetsRabbit::$plugin
@@ -48,9 +46,6 @@ class RetsRabbit extends Plugin
      * @var boolean
      */
     public $hasCpSettings = true;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * Set our $plugin static property to this class so that it can be accessed via
@@ -72,10 +67,7 @@ class RetsRabbit extends Plugin
         Craft::$app->view->twig->addExtension(new RetsRabbitTwigExtension());
 
         // Register our variables
-        Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
-            function (Event $event) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
                 /** @var CraftVariable $variable */
                 $variable = $event->sender;
                 $variable->set('retsRabbit', RetsRabbitVariable::class);
@@ -142,16 +134,19 @@ class RetsRabbit extends Plugin
         return new Settings();
     }
 
-    // Protected Methods
-    // =========================================================================
-    protected function settingsHtml(): string
+    /**
+     * @return null|string
+     * @throws \Twig_Error_Loader
+     * @throws \yii\base\Exception
+     */
+    protected function settingsHtml()
     {
         $valid = RetsRabbit::$plugin->tokens->isValid();
 		$canHitApi = RetsRabbit::$plugin->properties->search([
 			'$top' => 1
         ]);
         
-        return Craft::$app->view->renderTemplate(
+        return Craft::$app->getView()->renderTemplate(
             'rets-rabbit/settings', 
             [
                 'canHitApi'     => $canHitApi,
