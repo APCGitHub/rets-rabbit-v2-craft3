@@ -22,16 +22,10 @@
         }
     ],
     "require": {
-        "craftcms/cms": "^3.0.0-RC4",
+        "craftcms/cms": "^3.0.0",
         "league/fractal": "^0.16.0",
-        "rets-rabbit/cms-plugin-core": "^1.0"
+        "rets-rabbit/cms-plugin-core": "1.0.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Anecka/rets-rabbit-plugin-core"
-        }
-    ],	
     "autoload": {
         "psr-4": {
           "anecka\\retsrabbit\\": "src/"
@@ -45,5 +39,11 @@
         "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/rets-rabbit-v2-craft3/rets-rabbit/master/CHANGELOG.md",
         "class": "anecka\\retsrabbit\\RetsRabbit"
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../../plugins/rets-rabbit-plugin-core/"
+        }
+    ]
 }
