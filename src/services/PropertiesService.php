@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 namespace anecka\retsrabbit\services;
 
@@ -31,13 +31,13 @@ class PropertiesService extends Component
 	 */
 	public function __construct()
 	{
-		$settings = RetsRabbit::$plugin->getSettings();
+		$settings = RetsRabbit::getInstance()->getSettings();
 		$bridge = new CraftBridge;
 
 		//Set the token fetcher function so the core lib can grab tokens
 		//from cache on the plugin's behalf
 		$bridge->setTokenFetcher(function () {
-			return RetsRabbit::$plugin->cache->get('access_token', true);
+			return RetsRabbit::getInstance()->cache->get('access_token', false);
 		});
 
 		//Load the Craft Bridge into the ApiService
@@ -69,7 +69,7 @@ class PropertiesService extends Component
 				$code = $contents['error']['code'];
 
 				if($code == 'permission') {
-					$success = RetsRabbit::$plugin->tokens->refresh();
+					$success = RetsRabbit::getInstance()->tokens->refresh();
 
 					if(!is_null($success)) {
 						$res = $this->resource->search($params);
@@ -100,7 +100,7 @@ class PropertiesService extends Component
 				$code = $contents['error']['code'];
 
 				if($code == 'permission') {
-					$success = RetsRabbit::$plugin->tokens->refresh();
+					$success = RetsRabbit::getInstance()->tokens->refresh();
 
 					if(!is_null($success)) {
 						$res = $this->resource->single($id, $params);

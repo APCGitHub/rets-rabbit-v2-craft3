@@ -3,8 +3,8 @@
 namespace anecka\retsrabbit\variables;
 
 use anecka\retsrabbit\RetsRabbit;
-use anecka\retsRabbit\serializers\RetsRabbitArraySerializer;
-use anecka\retsRabbit\transformers\PropertyTransformer;
+use anecka\retsrabbit\serializers\RetsRabbitArraySerializer;
+use anecka\retsrabbit\transformers\PropertyTransformer;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
@@ -47,12 +47,12 @@ class PropertiesVariable
 
 		//See if fetching from cache
 		if($useCache) {
-			$data = RetsRabbit::$plugin->cache->get($cacheKey);
+			$data = RetsRabbit::getInstance()->cache->get($cacheKey);
 		}
 
 		//Check if any result pulled from cache
 		if(is_null($data) || empty($data)) {
-			$res = RetsRabbit::$plugin->properties->find($id, $resoParams);
+			$res = RetsRabbit::getInstance()->properties->find($id, $resoParams);
 
 			if(!$res->didSucceed()) {
 				$error = true;
@@ -62,7 +62,7 @@ class PropertiesVariable
 				if($useCache) {
 					$ttl = $cacheDuration ?: $this->cacheDuration;
 
-					RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
+					RetsRabbit::getInstance()->cache->set($cacheKey, $data, $ttl);
 				}
 			}
 		}
@@ -97,12 +97,12 @@ class PropertiesVariable
 
 		//See if fetching from cache
 		if($useCache) {
-			$data = RetsRabbit::$plugin->cache->get($cacheKey);
+			$data = RetsRabbit::getInstance()->cache->get($cacheKey);
 		}
 
 		//Check if any result pulled from cache
 		if(is_null($data) || empty($data)) {
-			$res = RetsRabbit::$plugin->properties->search($params);
+			$res = RetsRabbit::getInstance()->properties->search($params);
 
 			if(!$res->didSucceed()) {
 				$error = true;
@@ -112,7 +112,7 @@ class PropertiesVariable
 				if($useCache) {
 					$ttl = $cacheDuration ?: $this->cacheDuration;
 
-					RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
+					RetsRabbit::getInstance()->cache->set($cacheKey, $data, $ttl);
 				}
 			}
 		}
@@ -162,11 +162,11 @@ class PropertiesVariable
 
 			//See if fetching from cache
 			if($useCache) {
-				$data = RetsRabbit::$plugin->cache->get($cacheKey);
+				$data = RetsRabbit::getInstance()->cache->get($cacheKey);
 			}
 
 			if(is_null($data) || empty($data)) {
-				$res = RetsRabbit::$plugin->properties->search($params);
+				$res = RetsRabbit::getInstance()->properties->search($params);
 
 				if(!$res->didSucceed()) {
 					$error = true;
@@ -176,7 +176,7 @@ class PropertiesVariable
 					if($useCache) {
 						$ttl = $cacheDuration ?: $this->cacheDuration;
 
-						RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
+						RetsRabbit::getInstance()->cache->set($cacheKey, $data, $ttl);
 					}
 				}
 			}
