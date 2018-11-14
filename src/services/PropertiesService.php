@@ -31,13 +31,13 @@ class PropertiesService extends Component
 	 */
 	public function __construct()
 	{
-		$settings = RetsRabbit::getInstance()->getSettings();
+		$settings = RetsRabbit::$plugin->getSettings();
 		$bridge = new CraftBridge;
 
 		//Set the token fetcher function so the core lib can grab tokens
 		//from cache on the plugin's behalf
 		$bridge->setTokenFetcher(function () {
-			return RetsRabbit::getInstance()->cache->get('access_token', false);
+			return RetsRabbit::$plugin->getCache()->get('access_token', false);
 		});
 
 		//Load the Craft Bridge into the ApiService
@@ -56,7 +56,7 @@ class PropertiesService extends Component
 	 * @param  array
 	 * @return array
 	 */
-	public function search($params = array())
+	public function search($params = [])
 	{
 		$res = $this->resource->search($params);
 
@@ -69,7 +69,7 @@ class PropertiesService extends Component
 				$code = $contents['error']['code'];
 
 				if($code == 'permission') {
-					$success = RetsRabbit::getInstance()->tokens->refresh();
+					$success = RetsRabbit::$plugin->getTokens()->refresh();
 
 					if(!is_null($success)) {
 						$res = $this->resource->search($params);
@@ -87,7 +87,7 @@ class PropertiesService extends Component
 	 * @param  string
 	 * @return array
 	 */
-	public function find($id = '', $params = array())
+	public function find($id = '', $params = [])
 	{
 		$res = $this->resource->single($id, $params);
 
@@ -100,7 +100,7 @@ class PropertiesService extends Component
 				$code = $contents['error']['code'];
 
 				if($code == 'permission') {
-					$success = RetsRabbit::getInstance()->tokens->refresh();
+					$success = RetsRabbit::$plugin->getTokens()->refresh();
 
 					if(!is_null($success)) {
 						$res = $this->resource->single($id, $params);

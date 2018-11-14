@@ -29,7 +29,7 @@ class TokensService extends Component
 	{
 		$bridge = new CraftBridge;
 		$this->api = new ApiService($bridge);
-		$this->settings = RetsRabbit::getInstance()->getSettings();
+		$this->settings = RetsRabbit::$plugin->getSettings();
 
 		//Allow developer to override base endpoint
 		if($this->settings->apiEndpoint) {
@@ -57,7 +57,7 @@ class TokensService extends Component
 	            $token = $content['access_token'];
 	            $ttl = $content['expires_in'];
 
-	            RetsRabbit::getInstance()->cache->set('access_token', $token, $ttl, false);
+	            RetsRabbit::$plugin->getCache()->set('access_token', $token, $ttl, false);
 	        } else {
 	        	Craft::warning('Could not fetch the access token.', __METHOD__);
 	        }
@@ -68,16 +68,15 @@ class TokensService extends Component
         return $token;
 	}
 
-	/**
-	 * @return boolean
-	 */
-	public function isValid()
-	{
-		$token = RetsRabbit::getInstance()->cache->get('access_token', true);
+    /**
+     * @return boolean
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+	public function isValid(): bool
+    {
+		$token = RetsRabbit::$plugin->getCache()->get('access_token', false);
 
-        if(is_null($token) || empty($token))
-            return false;
-
-        return true;
-	}
+        return !($token === null || empty($token));
+    }
 }

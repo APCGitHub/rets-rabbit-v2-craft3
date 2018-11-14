@@ -6,6 +6,9 @@ use Craft;
 
 use craft\base\Component;
 
+/**
+ *
+ */
 class CacheService extends Component
 {
 	/**
@@ -15,13 +18,14 @@ class CacheService extends Component
 	 */
 	private $basePath = '/rets-rabbit/';
 
-	/**
-	 * @param string
-	 * @param mixed
-	 * @param int
-	 * @param boolean
-	 */
-	public function set($id, $value, $expire = 3600, $secure = false)
+    /**
+     * @param string
+     * @param mixed
+     * @param int
+     * @param boolean
+     * @return bool
+     */
+	public function set($id, $value, $expire = 3600, $secure = false): bool
 	{
 		$key = $this->basePath . $id;
 
@@ -32,11 +36,13 @@ class CacheService extends Component
 		return Craft::$app->cache->set($key, $value, $expire);
 	}
 
-	/**
-	 * @param  string
-	 * @param  boolean
-	 * @return mixed|null
-	 */
+    /**
+     * @param  string
+     * @param bool $secure
+     * @return mixed|null
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
 	public function get($id, $secure = false)
 	{
 		$key = $this->basePath . $id;
@@ -53,8 +59,8 @@ class CacheService extends Component
 	 * @param  string
 	 * @return boolean
 	 */
-	public function delete($id)
-	{
+	public function delete($id): bool
+    {
 		$key = $this->basePath . $id;
 
 		return Craft::$app->cache->delete($key);		
