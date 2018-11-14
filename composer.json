@@ -1,8 +1,8 @@
 {
-    "name": "anecka/rets-rabbit",
+    "name": "apc/rets-rabbit",
     "description": "Display real estate listings in your craft site in a simple and intuitive way.",
     "type": "craft-plugin",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "keywords": [
         "craft",
         "cms",
@@ -17,14 +17,15 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Anecka, LLC",
-            "homepage": "http://anecka.com"
+            "name": "APC Data Analytics, LLC",
+            "homepage": "http://www.apcdata.net/"
         }
     ],
     "require": {
         "craftcms/cms": "^3.0.0",
         "league/fractal": "^0.16.0",
-        "rets-rabbit/cms-plugin-core": "1.0.0"
+        "rets-rabbit/cms-plugin-core": "^1.0",
+      "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
