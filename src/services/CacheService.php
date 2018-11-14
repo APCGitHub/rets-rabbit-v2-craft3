@@ -1,6 +1,6 @@
 <?php
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
 use Craft;
 

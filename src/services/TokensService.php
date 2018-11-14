@@ -1,10 +1,10 @@
 <?php
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
-use Anecka\RetsRabbit\Core\ApiService;
-use Anecka\RetsRabbit\Core\Bridges\CraftBridge;
-use anecka\retsrabbit\RetsRabbit;
+use Apc\RetsRabbit\Core\ApiService;
+use Apc\RetsRabbit\Core\Bridges\CraftBridge;
+use apc\retsrabbit\RetsRabbit;
 
 use Craft;
 use craft\base\Component;

@@ -8,11 +8,11 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit\controllers;
+namespace apc\retsrabbit\controllers;
 
 use Craft;
 
-use anecka\retsrabbit\RetsRabbit;
+use apc\retsrabbit\RetsRabbit;
 use craft\web\Controller;
 
 /**
@@ -38,7 +38,7 @@ class PropertiesController extends Controller
      * to the search results page.
      *
      * @return mixed
-     * @throws \anecka\retsrabbit\exceptions\InvalidSearchException
+     * @throws \apc\retsrabbit\exceptions\InvalidSearchException
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\db\Exception
      * @throws \yii\web\BadRequestHttpException

@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit\migrations;
+namespace apc\retsrabbit\migrations;
 
 use Craft;
 

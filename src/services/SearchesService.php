@@ -1,12 +1,12 @@
 <?php
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
 use Craft;
 
-use anecka\retsrabbit\exceptions\InvalidSearchException;
-use anecka\retsrabbit\models\Search;
-use anecka\retsrabbit\records\SearchRecord;
+use apc\retsrabbit\exceptions\InvalidSearchException;
+use apc\retsrabbit\models\Search;
+use apc\retsrabbit\records\SearchRecord;
 use craft\base\Component;
 
 class SearchesService extends Component

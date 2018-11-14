@@ -1,11 +1,11 @@
 <?php
 
-namespace anecka\retsrabbit\variables;
+namespace apc\retsrabbit\variables;
 
-use anecka\retsrabbit\models\Search;
-use anecka\retsrabbit\RetsRabbit;
-use anecka\retsrabbit\serializers\RetsRabbitArraySerializer;
-use anecka\retsrabbit\transformers\PropertyTransformer;
+use apc\retsrabbit\models\Search;
+use apc\retsrabbit\RetsRabbit;
+use apc\retsrabbit\serializers\RetsRabbitArraySerializer;
+use apc\retsrabbit\transformers\PropertyTransformer;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;

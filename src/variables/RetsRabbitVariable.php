@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit\variables;
+namespace apc\retsrabbit\variables;
 
 
 /**
@@ -35,7 +35,7 @@ class RetsRabbitVariable
      */
     public function __call($name, $arguments)
     {
-        $className = "anecka\\retsrabbit\\variables\\" . ucfirst($name) . 'Variable';
+        $className = "apc\\retsrabbit\\variables\\" . ucfirst($name) . 'Variable';
 
         return class_exists($className) ? new $className() : null;
     }

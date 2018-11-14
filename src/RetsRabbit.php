@@ -9,12 +9,12 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit;
+namespace apc\retsrabbit;
 
-use anecka\retsrabbit\models\Settings;
-use anecka\retsrabbit\Traits\PluginTrait;
-use anecka\retsrabbit\variables\RetsRabbitVariable;
-use anecka\retsrabbit\twigextensions\RetsRabbitTwigExtension;
+use apc\retsrabbit\models\Settings;
+use apc\retsrabbit\traits\PluginTrait;
+use apc\retsrabbit\variables\RetsRabbitVariable;
+use apc\retsrabbit\twigextensions\RetsRabbitTwigExtension;
 
 use Craft;
 use craft\base\Plugin;
@@ -93,11 +93,11 @@ class RetsRabbit extends Plugin
          * Set Plugin Components
          */
         $this->setComponents([
-            'cache' => \anecka\retsrabbit\services\CacheService::class,
-            'forms' => \anecka\retsrabbit\services\FormsService::class,
-            'properties' => \anecka\retsrabbit\services\PropertiesService::class,
-            'searches' => \anecka\retsrabbit\services\SearchesService::class,
-            'tokens' => \anecka\retsrabbit\services\TokensService::class,
+            'cache' => \apc\retsrabbit\services\CacheService::class,
+            'forms' => \apc\retsrabbit\services\FormsService::class,
+            'properties' => \apc\retsrabbit\services\PropertiesService::class,
+            'searches' => \apc\retsrabbit\services\SearchesService::class,
+            'tokens' => \apc\retsrabbit\services\TokensService::class,
         ]);
 
         /**

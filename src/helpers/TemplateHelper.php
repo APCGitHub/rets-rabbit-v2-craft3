@@ -1,16 +1,16 @@
 <?php
 
-namespace anecka\retsrabbit\helpers;
+namespace apc\retsrabbit\helpers;
 
 use Craft;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
 
-use anecka\retsrabbit\models\SearchCriteriaModel;
-use anecka\retsrabbit\RetsRabbit;
-use anecka\retsrabbit\serializers\RetsRabbitArraySerializer;
-use anecka\retsrabbit\transformers\PropertyTransformer;
+use apc\retsrabbit\models\SearchCriteriaModel;
+use apc\retsrabbit\RetsRabbit;
+use apc\retsrabbit\serializers\RetsRabbitArraySerializer;
+use apc\retsrabbit\transformers\PropertyTransformer;
 
 class TemplateHelper
 {

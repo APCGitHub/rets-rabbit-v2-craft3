@@ -1,11 +1,11 @@
 <?php /** @noinspection ALL */
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
-use Anecka\RetsRabbit\Core\ApiService;
-use Anecka\RetsRabbit\Core\Bridges\CraftBridge;
-use Anecka\RetsRabbit\Core\Resources\PropertiesResource;
-use anecka\retsrabbit\RetsRabbit;
+use Apc\RetsRabbit\Core\ApiService;
+use Apc\RetsRabbit\Core\Bridges\CraftBridge;
+use Apc\RetsRabbit\Core\Resources\PropertiesResource;
+use apc\retsrabbit\RetsRabbit;
 
 use Craft;
 use craft\base\Component;

@@ -1,6 +1,6 @@
 <?php
 
-namespace anecka\retsrabbit\exceptions;
+namespace apc\retsrabbit\exceptions;
 
 use yii\base\Exception;
 

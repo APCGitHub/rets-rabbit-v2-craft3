@@ -1,6 +1,6 @@
 <?php
 
-namespace anecka\retsrabbit\Serializers;
+namespace apc\retsrabbit\Serializers;
 
 use League\Fractal\Serializer\ArraySerializer;
 

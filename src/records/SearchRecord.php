@@ -1,6 +1,6 @@
 <?php
 
-namespace anecka\retsrabbit\records;
+namespace apc\retsrabbit\records;
 
 use craft\db\ActiveRecord;
 

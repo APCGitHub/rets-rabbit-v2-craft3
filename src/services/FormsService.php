@@ -1,8 +1,8 @@
 <?php /** @noinspection ALL */
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
-use Anecka\RetsRabbit\Core\Query\QueryParser;
+use Apc\RetsRabbit\Core\Query\QueryParser;
 use Craft;
 
 use craft\base\Component;

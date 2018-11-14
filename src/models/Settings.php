@@ -1,6 +1,6 @@
 <?php
 
-namespace anecka\retsrabbit\models;
+namespace apc\retsrabbit\models;
 
 use craft\base\Model;
 

@@ -1,14 +1,14 @@
 <?php
 
 
-namespace anecka\retsrabbit\Traits;
+namespace apc\retsrabbit\traits;
 
 
-use anecka\retsrabbit\services\CacheService;
-use anecka\retsrabbit\services\FormsService;
-use anecka\retsrabbit\services\PropertiesService;
-use anecka\retsrabbit\services\SearchesService;
-use anecka\retsrabbit\services\TokensService;
+use apc\retsrabbit\services\CacheService;
+use apc\retsrabbit\services\FormsService;
+use apc\retsrabbit\services\PropertiesService;
+use apc\retsrabbit\services\SearchesService;
+use apc\retsrabbit\services\TokensService;
 
 trait PluginTrait
 {

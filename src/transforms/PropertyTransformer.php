@@ -1,6 +1,6 @@
 <?php
 
-namespace anecka\retsrabbit\transformers;
+namespace apc\retsrabbit\transformers;
 
 use League\Fractal\TransformerAbstract;
 

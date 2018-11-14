@@ -8,9 +8,9 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit\twigextensions;
+namespace apc\retsrabbit\twigextensions;
 
-use anecka\retsrabbit\RetsRabbit;
+use apc\retsrabbit\RetsRabbit;
 
 use Craft;
 
