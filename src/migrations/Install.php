@@ -12,8 +12,6 @@ namespace anecka\retsrabbit\migrations;
 
 use Craft;
 
-use anecka\retsrabbit\RetsRabbit;
-use craft\config\DbConfig;
 use craft\db\Migration;
 
 /**
@@ -32,16 +30,10 @@ use craft\db\Migration;
  */
 class Install extends Migration
 {
-    // Public Properties
-    // =========================================================================
-
     /**
      * @var string The database driver to use
      */
     public $driver;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * This method contains the logic to be executed when applying this migration.
@@ -53,7 +45,7 @@ class Install extends Migration
      * @return boolean return a false value to indicate the migration fails
      * and should not proceed further. All other return values mean the migration succeeds.
      */
-    public function safeUp()
+    public function safeUp(): bool
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
 
@@ -78,7 +70,7 @@ class Install extends Migration
      * @return boolean return a false value to indicate the migration fails
      * and should not proceed further. All other return values mean the migration succeeds.
      */
-    public function safeDown()
+    public function safeDown(): bool
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
         $this->removeTables();
@@ -94,7 +86,7 @@ class Install extends Migration
      *
      * @return bool
      */
-    protected function createTables()
+    protected function createTables(): bool
     {
         $tablesCreated = false;
         $tableSchema = Craft::$app->db->schema->getTableSchema('{{%rets_rabbit_searches}}');
