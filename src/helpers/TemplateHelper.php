@@ -14,15 +14,15 @@ use anecka\retsrabbit\transformers\PropertyTransformer;
 
 class TemplateHelper
 {
-	/**
-	 * @param  integer $searchId
-	 * @param  array $resoParams
-	 * @return array
-	 */
+    /**
+     * @param SearchCriteriaModel $criteria
+     * @return array
+     * @throws \Exception
+     */
 	public static function paginateProperties(SearchCriteriaModel $criteria)
 	{
-		if(is_null($criteria->getSearchId())) {
-			throw new \Exception("The search id was not supplied.");
+		if($criteria->getSearchId() === null) {
+			throw new \Exception('The search id was not supplied.');
 		}
 
 		$paginateV = new PaginateVariable;
@@ -65,7 +65,7 @@ class TemplateHelper
 			
 
 			//Try to fetch the search total
-			if(is_null($total) || $total === FALSE) {
+			if($total === null || $total === FALSE) {
 				$res = RetsRabbit::$plugin->properties->search($countParams);
 
 				if(!$res->didSucceed()) {
