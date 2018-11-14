@@ -15,6 +15,16 @@ use craft\base\Model;
  */
 class Search extends Model
 {
+    /**
+     * @var
+     */
+    public $id;
+
+    /**
+     * @var
+     */
+    public $siteId;
+
 	/**
 	 * The type of search
 	 * 
@@ -25,18 +35,25 @@ class Search extends Model
 	/**
 	 * The search params
 	 * 
-	 * @var array
+	 * @var string
 	 */
 	public $params;
+
+    /**
+     * @var
+     */
+	public $dateCreated, $dateUpdated, $uid;
 
 	/**
 	 * @return array
 	 */
-	public function rules()
+	public function rules(): array
 	{
 		return [
-			['type', 'string'],
-			['type', 'required']
+		    ['siteId', 'integer'],
+			[['type', 'params'], 'string'],
+			['type', 'required'],
+            [['siteId', 'params', 'type'], 'safe']
 		];
 	}
 }
