@@ -12,6 +12,7 @@
 namespace anecka\retsrabbit;
 
 use anecka\retsrabbit\models\Settings;
+use anecka\retsrabbit\Traits\PluginTrait;
 use anecka\retsrabbit\variables\RetsRabbitVariable;
 use anecka\retsrabbit\twigextensions\RetsRabbitTwigExtension;
 
@@ -33,6 +34,8 @@ use yii\base\Event;
  */
 class RetsRabbit extends Plugin
 {
+    use PluginTrait;
+
     /**
      * Static property that is an instance of this plugin class so that it can be accessed via
      * RetsRabbit::$plugin
@@ -43,6 +46,7 @@ class RetsRabbit extends Plugin
 
     /**
      * Has a control panel
+     *
      * @var boolean
      */
     public $hasCpSettings = true;
@@ -64,21 +68,21 @@ class RetsRabbit extends Plugin
         self::$plugin = $this;
 
         // Add in our Twig extensions
-        Craft::$app->view->twig->addExtension(new RetsRabbitTwigExtension());
+        Craft::$app->view->registerTwigExtension(new RetsRabbitTwigExtension());
 
         // Register our variables
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
-                /** @var CraftVariable $variable */
-                $variable = $event->sender;
-                $variable->set('retsRabbit', RetsRabbitVariable::class);
-            }
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+            /** @var CraftVariable $variable */
+            $variable = $event->sender;
+            $variable->set('retsRabbit', RetsRabbitVariable::class);
+        }
         );
 
         // Do something after we're installed
         Event::on(
             Plugins::class,
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function (PluginEvent $event) {
+            function(PluginEvent $event) {
                 if ($event->plugin === $this) {
                     // We were just installed
                 }
@@ -89,11 +93,11 @@ class RetsRabbit extends Plugin
          * Set Plugin Components
          */
         $this->setComponents([
-            "cache"      => \anecka\retsrabbit\services\CacheService::class,
-            "forms"      => \anecka\retsrabbit\services\FormsService::class,
-            "properties" => \anecka\retsrabbit\services\PropertiesService::class,
-            "searches"   => \anecka\retsrabbit\services\SearchesService::class,
-            "tokens"     => \anecka\retsrabbit\services\TokensService::class,
+            'cache' => \anecka\retsrabbit\services\CacheService::class,
+            'forms' => \anecka\retsrabbit\services\FormsService::class,
+            'properties' => \anecka\retsrabbit\services\PropertiesService::class,
+            'searches' => \anecka\retsrabbit\services\SearchesService::class,
+            'tokens' => \anecka\retsrabbit\services\TokensService::class,
         ]);
 
         /**
@@ -126,7 +130,7 @@ class RetsRabbit extends Plugin
 
     /**
      * Create the settings model
-     * 
+     *
      * @return Settings
      */
     protected function createSettingsModel()
@@ -141,17 +145,17 @@ class RetsRabbit extends Plugin
      */
     protected function settingsHtml()
     {
-        $valid = RetsRabbit::$plugin->tokens->isValid();
-		$canHitApi = RetsRabbit::$plugin->properties->search([
-			'$top' => 1
+        $valid     = RetsRabbit::getInstance()->tokens->isValid();
+        $canHitApi = RetsRabbit::getInstance()->properties->search([
+            '$top' => 1
         ]);
-        
+
         return Craft::$app->getView()->renderTemplate(
-            'rets-rabbit/settings', 
+            'rets-rabbit/settings',
             [
-                'canHitApi'     => $canHitApi,
-                'settings'      => $this->getSettings(),
-                'tokenExists'   => $valid,
+                'canHitApi' => $canHitApi,
+                'settings' => $this->getSettings(),
+                'tokenExists' => $valid,
             ]
         );
     }
