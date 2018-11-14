@@ -29,7 +29,7 @@
     },
     "autoload": {
         "psr-4": {
-          "anecka\\retsrabbit\\": "src/"
+          "apc\\retsrabbit\\": "src/"
         }
     },
     "extra": {
@@ -39,7 +39,7 @@
         "hasCpSettings": false,
         "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/rets-rabbit-v2-craft3/rets-rabbit/master/CHANGELOG.md",
-        "class": "anecka\\retsrabbit\\RetsRabbit"
+        "class": "apc\\retsrabbit\\RetsRabbit"
     },
     "repositories": [
         {
