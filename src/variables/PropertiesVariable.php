@@ -6,10 +6,12 @@ use apc\retsrabbit\models\Search;
 use apc\retsrabbit\RetsRabbit;
 use apc\retsrabbit\serializers\RetsRabbitArraySerializer;
 use apc\retsrabbit\transformers\PropertyTransformer;
+use apc\retsrabbit\ViewModel;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
 use Craft;
+use yii\web\View;
 
 class PropertiesVariable
 {
@@ -41,11 +43,11 @@ class PropertiesVariable
      * @param array $resoParams
      * @param bool $useCache
      * @param null $cacheDuration
-     * @return array
+     * @return ViewModel
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
-    public function find($id = '', $resoParams = [], $useCache = false, $cacheDuration = null): array
+    public function find($id = '', $resoParams = [], $useCache = false, $cacheDuration = null): ViewModel
     {
         $cacheKey = md5($id . serialize($resoParams));
         $cacheKey = 'properties/' . hash('sha256', $cacheKey);
@@ -63,6 +65,7 @@ class PropertiesVariable
 
             if (!$res->didSucceed()) {
                 $error = true;
+                $data  = $res->getResponse();
             } else {
                 $data = $res->getResponse();
 
@@ -74,18 +77,14 @@ class PropertiesVariable
             }
         }
 
-        $viewData = null;
+        $viewModel = new ViewModel();
 
-        if (!$error) {
-            if (empty($data)) {
-                $viewData = [];
-            } else {
-                $resources = new Item($data, new PropertyTransformer);
-                $viewData  = $this->fractal->createData($resources)->toArray();
-            }
+        if (!$error && !empty($data)) {
+            $resources       = new Item($data, new PropertyTransformer);
+            $viewModel->data = $this->fractal->createData($resources)->toArray();
         }
 
-        return $viewData;
+        return $viewModel;
     }
 
     /**
@@ -94,13 +93,16 @@ class PropertiesVariable
      * @param  $params array
      * @param  $useCache bool
      * @param  $cacheDuration mixed
-     * @return array
+     * @return ViewModel
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
-    public function query($params = [], $useCache = false, $cacheDuration = null): array
+    public function query($params = [], $useCache = false, $cacheDuration = null): ViewModel
     {
-        $cacheKey = 'searches/' . hash('sha256', serialize($params));
-        $data     = [];
-        $error    = false;
+        $cacheKey  = 'searches/' . hash('sha256', serialize($params));
+        $data      = [];
+        $error     = false;
+        $viewModel = new ViewModel();
 
         //See if fetching from cache
         if ($useCache) {
@@ -124,18 +126,12 @@ class PropertiesVariable
             }
         }
 
-        $viewData = null;
-
-        if (!$error) {
-            if (empty($data)) {
-                $viewData = [];
-            } else {
-                $resources = new Collection($data, new PropertyTransformer);
-                $viewData  = $this->fractal->createData($resources)->toArray();
-            }
+        if (!$error && !empty($data)) {
+            $resources       = new Collection($data, new PropertyTransformer);
+            $viewModel->data = $this->fractal->createData($resources)->toArray();
         }
 
-        return $viewData;
+        return $viewModel;
     }
 
     /**
@@ -145,10 +141,13 @@ class PropertiesVariable
      * @param array $overrides
      * @param  bool $useCache
      * @param  mixed $cacheDuration
-     * @return array
+     * @return ViewModel
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
-    public function search($id = '', $overrides = [], $useCache = false, $cacheDuration = null): array
-    {
+    public function search(
+        $id = '', $overrides = [], $useCache = false, $cacheDuration = null
+    ): ViewModel {
         /** @var Search $search */
         $search = RetsRabbit::$plugin->getSearches()->getById($id);
 
@@ -193,17 +192,13 @@ class PropertiesVariable
             }
         }
 
-        $viewData = null;
+        $viewModel = new ViewModel();
 
-        if (!$error) {
-            if (empty($data)) {
-                $viewData = [];
-            } else {
-                $resources = new Collection($data, new PropertyTransformer);
-                $viewData  = $this->fractal->createData($resources)->toArray();
-            }
+        if (!$error && !empty($data)) {
+            $resources       = new Collection($data, new PropertyTransformer);
+            $viewModel->data = $this->fractal->createData($resources)->toArray();
         }
 
-        return $viewData;
+        return $viewModel;
     }
 }
