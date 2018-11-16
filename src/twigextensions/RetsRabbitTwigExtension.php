@@ -27,58 +27,10 @@ use Craft;
  */
 class RetsRabbitTwigExtension extends \Twig_Extension
 {
-    // Public Methods
-    // =========================================================================
-
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
-    public function getName()
-    {
-        return 'RetsRabbit';
-    }
-
-    /**
-     * Returns an array of Twig filters, used in Twig templates via:
-     *
-     *      {{ 'something' | someFilter }}
-     *
-     * @return array
-     */
-    public function getFilters()
+    public function getTokenParsers(): array
     {
         return [
-            new \Twig_SimpleFilter('someFilter', [$this, 'someInternalFunction']),
+            new RetsRabbitPaginateTokenParser()
         ];
-    }
-
-    /**
-     * Returns an array of Twig functions, used in Twig templates via:
-     *
-     *      {% set this = someFunction('something') %}
-     *
-    * @return array
-     */
-    public function getFunctions()
-    {
-        return [
-            new \Twig_SimpleFunction('someFilter', [$this, 'someInternalFunction']),
-        ];
-    }
-
-    /**
-     * Our function called via Twig; it can do anything you want
-     *
-     * @param null $text
-     *
-     * @return string
-     */
-    public function someInternalFunction($text = null)
-    {
-        $result = $text . " in the way";
-
-        return $result;
     }
 }
