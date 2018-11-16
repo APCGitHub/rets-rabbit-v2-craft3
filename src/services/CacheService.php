@@ -6,9 +6,6 @@ use Craft;
 
 use craft\base\Component;
 
-/**
- *
- */
 class CacheService extends Component
 {
 	/**
