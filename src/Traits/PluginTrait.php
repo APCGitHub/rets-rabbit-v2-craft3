@@ -4,6 +4,7 @@
 namespace apc\retsrabbit\traits;
 
 
+use apc\retsrabbit\services\ApiResponseService;
 use apc\retsrabbit\services\CacheService;
 use apc\retsrabbit\services\FormsService;
 use apc\retsrabbit\services\PropertiesService;
@@ -12,6 +13,14 @@ use apc\retsrabbit\services\TokensService;
 
 trait PluginTrait
 {
+    /**
+     * @return ApiResponseService
+     */
+    public function getApiResponses(): ApiResponseService
+    {
+        return $this->get('apiResponses');
+    }
+
     /**
      * @return CacheService
      */
