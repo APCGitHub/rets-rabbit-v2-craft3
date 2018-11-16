@@ -45,13 +45,6 @@ class RetsRabbit extends Plugin
     public static $plugin;
 
     /**
-     * Has a control panel
-     *
-     * @var boolean
-     */
-    public $hasCpSettings = true;
-
-    /**
      * Set our $plugin static property to this class so that it can be accessed via
      * RetsRabbit::$plugin
      *
@@ -144,7 +137,7 @@ class RetsRabbit extends Plugin
      * @throws \Twig_Error_Loader
      * @throws \yii\base\Exception
      */
-    protected function settingsHtml()
+    protected function settingsHtml(): string
     {
         $valid     = RetsRabbit::getInstance()->tokens->isValid();
         $canHitApi = RetsRabbit::getInstance()->properties->search([
