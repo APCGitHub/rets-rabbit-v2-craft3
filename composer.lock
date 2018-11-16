@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6749f29c9927e97ee0ee3d994206fdd7",
+    "content-hash": "a2b51b631b860768ee0f198c8566ffa6",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -324,16 +324,16 @@
         },
         {
             "name": "craftcms/cms",
-            "version": "3.0.30.2",
+            "version": "3.0.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/craftcms/cms.git",
-                "reference": "11670a3e8fc167e0b09656ba773dd2e77bbdae74"
+                "reference": "8491fa871a7f58bd1023f3882acf4865b5601143"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craftcms/cms/zipball/11670a3e8fc167e0b09656ba773dd2e77bbdae74",
-                "reference": "11670a3e8fc167e0b09656ba773dd2e77bbdae74",
+                "url": "https://api.github.com/repos/craftcms/cms/zipball/8491fa871a7f58bd1023f3882acf4865b5601143",
+                "reference": "8491fa871a7f58bd1023f3882acf4865b5601143",
                 "shasum": ""
             },
             "require": {
@@ -403,7 +403,7 @@
                 "craftcms",
                 "yii2"
             ],
-            "time": "2018-11-08T19:37:05+00:00"
+            "time": "2018-11-13T17:44:42+00:00"
         },
         {
             "name": "craftcms/oauth2-craftid",
@@ -1567,11 +1567,11 @@
         },
         {
             "name": "rets-rabbit/cms-plugin-core",
-            "version": "1.0.0",
+            "version": "1.0.9",
             "dist": {
                 "type": "path",
-                "url": "../../../plugins/rets-rabbit-plugin-core",
-                "reference": "49e5278e05cbe50bc7b2a3710f443f0e07bb8b4e",
+                "url": "/home/vagrant/plugins/rets-rabbit-plugin-core",
+                "reference": "fd108555245ee0b14a78f99fcce0784baf948cd5",
                 "shasum": null
             },
             "require": {
@@ -1585,7 +1585,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Anecka\\RetsRabbit\\Core\\": "src"
+                    "Apc\\RetsRabbit\\Core\\": "src"
                 }
             },
             "autoload-dev": {
@@ -1600,7 +1600,10 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Core logic for the Rets Rabbit CMS Plugins"
+            "description": "Core logic for the Rets Rabbit CMS Plugins",
+            "transport-options": {
+                "symlink": true
+            }
         },
         {
             "name": "seld/cli-prompt",

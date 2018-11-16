@@ -24,8 +24,8 @@
     "require": {
         "craftcms/cms": "^3.0.0",
         "league/fractal": "^0.16.0",
-        "rets-rabbit/cms-plugin-core": "^1.0",
-      "ext-json": "*"
+        "ext-json": "*",
+        "rets-rabbit/cms-plugin-core": "^1.0"
     },
     "autoload": {
         "psr-4": {
@@ -44,7 +44,10 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../../../plugins/rets-rabbit-plugin-core/"
+            "url": "/home/vagrant/plugins/rets-rabbit-plugin-core/",
+            "options": {
+                "symlink": true
+            }
         }
     ]
 }
