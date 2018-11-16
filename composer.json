@@ -23,7 +23,6 @@
     ],
     "require": {
         "craftcms/cms": "^3.0.0",
-        "league/fractal": "^0.16.0",
         "ext-json": "*",
         "rets-rabbit/cms-plugin-core": "^1.0"
     },
@@ -34,9 +33,10 @@
     },
     "extra": {
         "name": "Rets Rabbit",
+        "description": "Display real estate listings in your craft site in a simple and intuitive way.",
         "handle": "rets-rabbit",
         "schemaVersion": "1.0.0",
-        "hasCpSettings": false,
+        "hasCpSettings": true,
         "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/rets-rabbit-v2-craft3/rets-rabbit/master/CHANGELOG.md",
         "class": "apc\\retsrabbit\\RetsRabbit"
