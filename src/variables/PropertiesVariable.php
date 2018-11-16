@@ -2,39 +2,20 @@
 
 namespace apc\retsrabbit\variables;
 
+use apc\retsrabbit\converters\ListingConverter;
 use apc\retsrabbit\models\Search;
 use apc\retsrabbit\RetsRabbit;
-use apc\retsrabbit\serializers\RetsRabbitArraySerializer;
-use apc\retsrabbit\transformers\PropertyTransformer;
 use apc\retsrabbit\ViewModel;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Item;
-use League\Fractal\Resource\Collection;
 use Craft;
-use yii\web\View;
 
 class PropertiesVariable
 {
-    /**
-     * @var Manager
-     */
-    private $fractal;
-
     /**
      * Cache duration in seconds
      *
      * @var integer
      */
     private $cacheDuration = 3600;
-
-    /**
-     * RetsRabbit_PropertiesVariable Constructor
-     */
-    public function __construct()
-    {
-        $this->fractal = new Manager();
-        $this->fractal->setSerializer(new RetsRabbitArraySerializer);
-    }
 
     /**
      * Find a property listing by its MSL id.
@@ -49,39 +30,33 @@ class PropertiesVariable
      */
     public function find($id = '', $resoParams = [], $useCache = false, $cacheDuration = null): ViewModel
     {
-        $cacheKey = md5($id . serialize($resoParams));
-        $cacheKey = 'properties/' . hash('sha256', $cacheKey);
-        $data     = [];
-        $error    = false;
+        $resoParams = $resoParams ?? [];
+        $cacheKey   = md5($id . serialize($resoParams));
+        $cacheKey   = 'properties/' . hash('sha256', $cacheKey);
 
-        //See if fetching from cache
         if ($useCache) {
-            $data = RetsRabbit::$plugin->getCache()->get($cacheKey);
-        }
+            /** @var ViewModel $viewModel */
+            $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
-        //Check if any result pulled from cache
-        if ($data === null || empty($data)) {
-            $res = RetsRabbit::$plugin->getProperties()->find($id, $resoParams);
-
-            if (!$res->didSucceed()) {
-                $error = true;
-                $data  = $res->getResponse();
-            } else {
-                $data = $res->getResponse();
-
-                if ($useCache) {
-                    $ttl = $cacheDuration ?: $this->cacheDuration;
-
-                    RetsRabbit::$plugin->getCache()->set($cacheKey, $data, $ttl);
-                }
+            if ($viewModel !== false) {
+                return $viewModel;
             }
         }
 
         $viewModel = new ViewModel();
 
-        if (!$error && !empty($data)) {
-            $resources       = new Item($data, new PropertyTransformer);
-            $viewModel->data = $this->fractal->createData($resources)->toArray();
+        $res = RetsRabbit::$plugin->getProperties()->find($id, $resoParams);
+
+        if (!$res->didSucceed()) {
+            $viewModel->errors = RetsRabbit::$plugin->getApiResponses()->getResponseErrors($res);
+        } else {
+            $viewModel->data = (new ListingConverter())->parse($res->getResponse());
+
+            if ($useCache) {
+                $ttl = $cacheDuration ?: $this->cacheDuration;
+
+                RetsRabbit::$plugin->getCache()->set($cacheKey, $viewModel, $ttl);
+            }
         }
 
         return $viewModel;
@@ -99,36 +74,34 @@ class PropertiesVariable
      */
     public function query($params = [], $useCache = false, $cacheDuration = null): ViewModel
     {
-        $cacheKey  = 'searches/' . hash('sha256', serialize($params));
-        $data      = [];
-        $error     = false;
-        $viewModel = new ViewModel();
+        $params   = $params ?? [];
+        $cacheKey = 'searches/' . hash('sha256', serialize($params));
 
-        //See if fetching from cache
         if ($useCache) {
-            $data = RetsRabbit::$plugin->getCache()->get($cacheKey);
-        }
+            /** @var ViewModel $viewModel */
+            $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
-        //Check if any result pulled from cache
-        if ($data === null || empty($data)) {
-            $res = RetsRabbit::$plugin->getProperties()->search($params);
-
-            if (!$res->didSucceed()) {
-                $error = true;
-            } else {
-                $data = $res->getResponse()['value'];
-
-                if ($useCache) {
-                    $ttl = $cacheDuration ?: $this->cacheDuration;
-
-                    RetsRabbit::$plugin->getCache()->set($cacheKey, $data, $ttl);
-                }
+            if ($viewModel !== false) {
+                return $viewModel;
             }
         }
 
-        if (!$error && !empty($data)) {
-            $resources       = new Collection($data, new PropertyTransformer);
-            $viewModel->data = $this->fractal->createData($resources)->toArray();
+        $viewModel = new ViewModel();
+        $res       = RetsRabbit::$plugin->getProperties()->search($params);
+
+        if (!$res->didSucceed()) {
+            $viewModel->errors = RetsRabbit::$plugin->getApiResponses()->getResponseErrors($res);
+        } else {
+            $viewModel->data = (new ListingConverter())->parseCollection(
+                $res->getResponse()['value'] ?? [],
+                new ListingConverter()
+            );
+
+            if ($useCache) {
+                $ttl = $cacheDuration ?: $this->cacheDuration;
+
+                RetsRabbit::$plugin->getCache()->set($cacheKey, $viewModel, $ttl);
+            }
         }
 
         return $viewModel;
@@ -152,7 +125,7 @@ class PropertiesVariable
         $search = RetsRabbit::$plugin->getSearches()->getById($id);
 
         if (!$search) {
-            return null;
+            return new ViewModel();
         }
 
         $currentPage   = Craft::$app->request->getPageNum();
@@ -168,35 +141,31 @@ class PropertiesVariable
             $params['$skip'] = ($currentPage - 1) * $params['$top'];
         }
         $cacheKey = 'searches/' . hash('sha256', serialize($params));
-        $data     = [];
-        $error    = false;
 
-        //See if fetching from cache
         if ($useCache) {
-            $data = RetsRabbit::$plugin->getCache()->get($cacheKey);
-        }
+            $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
-        if ($data === null || empty($data)) {
-            $res = RetsRabbit::$plugin->getProperties()->search($params);
-
-            if (!$res->didSucceed()) {
-                $error = true;
-            } else {
-                $data = $res->getResponse()['value'];
-
-                if ($useCache) {
-                    $ttl = $cacheDuration ?: $this->cacheDuration;
-
-                    RetsRabbit::$plugin->getCache()->set($cacheKey, $data, $ttl);
-                }
+            if ($viewModel !== false) {
+                return $viewModel;
             }
         }
 
+        $res       = RetsRabbit::$plugin->getProperties()->search($params);
         $viewModel = new ViewModel();
 
-        if (!$error && !empty($data)) {
-            $resources       = new Collection($data, new PropertyTransformer);
-            $viewModel->data = $this->fractal->createData($resources)->toArray();
+        if (!$res->didSucceed()) {
+            $viewModel->errors = RetsRabbit::$plugin->getApiResponses()->getResponseErrors($res);
+        } else {
+            $viewModel->data = (new ListingConverter())->parseCollection(
+                $res->getResponse()['value'] ?? [],
+                new ListingConverter()
+            );
+
+            if ($useCache) {
+                $ttl = $cacheDuration ?: $this->cacheDuration;
+
+                RetsRabbit::$plugin->getCache()->set($cacheKey, $viewModel, $ttl);
+            }
         }
 
         return $viewModel;
