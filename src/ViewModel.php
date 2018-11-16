@@ -29,6 +29,6 @@ class ViewModel
      */
     public function hasErrors(): bool
     {
-        return $this->errors !== null && count($this->errors) > 0;
+        return $this->errors !== null && !empty($this->errors);
     }
 }
