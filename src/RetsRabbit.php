@@ -93,6 +93,7 @@ class RetsRabbit extends Plugin
          * Set Plugin Components
          */
         $this->setComponents([
+            'apiResponses' => \apc\retsrabbit\services\ApiResponseService::class,
             'cache' => \apc\retsrabbit\services\CacheService::class,
             'forms' => \apc\retsrabbit\services\FormsService::class,
             'properties' => \apc\retsrabbit\services\PropertiesService::class,
