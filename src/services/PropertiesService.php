@@ -37,7 +37,7 @@ class PropertiesService extends Component
         //Set the token fetcher function so the core lib can grab tokens
         //from cache on the plugin's behalf
         $bridge->setTokenFetcher(function() {
-            return RetsRabbit::$plugin->getCache()->get('access_token', false);
+            return RetsRabbit::$plugin->getCache()->get('access_token');
         });
 
         //Load the Craft Bridge into the ApiService
