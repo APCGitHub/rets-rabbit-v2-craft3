@@ -11,6 +11,8 @@
 
 namespace apc\retsrabbit;
 
+use Apc\RetsRabbit\Core\ApiConfig;
+use Apc\RetsRabbit\Core\RetsRabbitApi;
 use apc\retsrabbit\models\Settings;
 use apc\retsrabbit\traits\PluginTrait;
 use apc\retsrabbit\variables\RetsRabbitVariable;
@@ -24,6 +26,7 @@ use craft\web\twig\variables\CraftVariable;
 use craft\events\RegisterUrlRulesEvent;
 
 use yii\base\Event;
+use yii\di\Container;
 
 /**
  * https://craftcms.com/docs/plugins/introduction
@@ -60,6 +63,14 @@ class RetsRabbit extends Plugin
         parent::init();
         self::$plugin = $this;
 
+        \Yii::$container->setSingleton('retsRabbitApi', function($container, $params, $config) {
+            $settings = $this->getSettings();
+            $config   = new ApiConfig($settings->apiEndpoint);
+            $api      = new RetsRabbitApi($config);
+
+            return $api;
+        });
+
         // Add in our Twig extensions
         Craft::$app->view->registerTwigExtension(new RetsRabbitTwigExtension());
 
@@ -68,8 +79,7 @@ class RetsRabbit extends Plugin
             /** @var CraftVariable $variable */
             $variable = $event->sender;
             $variable->set('retsRabbit', RetsRabbitVariable::class);
-        }
-        );
+        });
 
         // Do something after we're installed
         Event::on(
@@ -87,11 +97,11 @@ class RetsRabbit extends Plugin
          */
         $this->setComponents([
             'apiResponses' => \apc\retsrabbit\services\ApiResponseService::class,
-            'cache' => \apc\retsrabbit\services\CacheService::class,
-            'forms' => \apc\retsrabbit\services\FormsService::class,
-            'properties' => \apc\retsrabbit\services\PropertiesService::class,
-            'searches' => \apc\retsrabbit\services\SearchesService::class,
-            'tokens' => \apc\retsrabbit\services\TokensService::class,
+            'cache'        => \apc\retsrabbit\services\CacheService::class,
+            'forms'        => \apc\retsrabbit\services\FormsService::class,
+            'properties'   => \apc\retsrabbit\services\PropertiesService::class,
+            'searches'     => \apc\retsrabbit\services\SearchesService::class,
+            'tokens'       => \apc\retsrabbit\services\TokensService::class,
         ]);
 
         /**
@@ -139,16 +149,16 @@ class RetsRabbit extends Plugin
      */
     protected function settingsHtml(): string
     {
-        $valid     = RetsRabbit::getInstance()->tokens->isValid();
-        $canHitApi = RetsRabbit::getInstance()->properties->search([
+        $valid     = RetsRabbit::getInstance()->getTokens()->isValid();
+        $canHitApi = RetsRabbit::getInstance()->getProperties()->search([
             '$top' => 1
         ]);
 
         return Craft::$app->getView()->renderTemplate(
             'rets-rabbit/settings',
             [
-                'canHitApi' => $canHitApi,
-                'settings' => $this->getSettings(),
+                'canHitApi'   => $canHitApi,
+                'settings'    => $this->getSettings(),
                 'tokenExists' => $valid,
             ]
         );

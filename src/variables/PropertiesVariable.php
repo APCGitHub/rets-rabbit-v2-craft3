@@ -5,7 +5,8 @@ namespace apc\retsrabbit\variables;
 use apc\retsrabbit\converters\ListingConverter;
 use apc\retsrabbit\models\Search;
 use apc\retsrabbit\RetsRabbit;
-use apc\retsrabbit\ViewModel;
+use apc\retsrabbit\viewmodels\MultipleListingsViewModel;
+use apc\retsrabbit\viewmodels\ViewModel;
 use Craft;
 
 class PropertiesVariable
@@ -24,7 +25,7 @@ class PropertiesVariable
      * @param array $resoParams
      * @param bool $useCache
      * @param null $cacheDuration
-     * @return ViewModel
+     * @return \apc\retsrabbit\viewmodels\ViewModel
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
@@ -35,7 +36,7 @@ class PropertiesVariable
         $cacheKey   = 'properties/' . hash('sha256', $cacheKey);
 
         if ($useCache) {
-            /** @var ViewModel $viewModel */
+            /** @var \apc\retsrabbit\viewmodels\ViewModel $viewModel */
             $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
             if ($viewModel !== false) {
@@ -47,7 +48,7 @@ class PropertiesVariable
 
         $res = RetsRabbit::$plugin->getProperties()->find($id, $resoParams);
 
-        if (!$res->didSucceed()) {
+        if (!$res->wasSuccessful()) {
             $viewModel->errors = RetsRabbit::$plugin->getApiResponses()->getResponseErrors($res);
         } else {
             $viewModel->data = (new ListingConverter())->parse($res->getResponse());
@@ -68,7 +69,7 @@ class PropertiesVariable
      * @param  $params array
      * @param  $useCache bool
      * @param  $cacheDuration mixed
-     * @return ViewModel
+     * @return \apc\retsrabbit\viewmodels\ViewModel
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
@@ -78,7 +79,7 @@ class PropertiesVariable
         $cacheKey = 'searches/' . hash('sha256', serialize($params));
 
         if ($useCache) {
-            /** @var ViewModel $viewModel */
+            /** @var MultipleListingsViewModel $viewModel */
             $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
             if ($viewModel !== false) {
@@ -86,16 +87,13 @@ class PropertiesVariable
             }
         }
 
-        $viewModel = new ViewModel();
+        $viewModel = new MultipleListingsViewModel();
         $res       = RetsRabbit::$plugin->getProperties()->search($params);
 
-        if (!$res->didSucceed()) {
-            $viewModel->errors = RetsRabbit::$plugin->getApiResponses()->getResponseErrors($res);
+        if (!$res->wasSuccessful()) {
+            $viewModel->error = $res->error();
         } else {
-            $viewModel->data = (new ListingConverter())->parseCollection(
-                $res->getResponse()['value'] ?? [],
-                new ListingConverter()
-            );
+            $viewModel->decorateResource($res->listings());
 
             if ($useCache) {
                 $ttl = $cacheDuration ?: $this->cacheDuration;
@@ -114,7 +112,7 @@ class PropertiesVariable
      * @param array $overrides
      * @param  bool $useCache
      * @param  mixed $cacheDuration
-     * @return ViewModel
+     * @return \apc\retsrabbit\viewmodels\ViewModel
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */

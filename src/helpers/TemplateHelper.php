@@ -3,7 +3,7 @@
 namespace apc\retsrabbit\helpers;
 
 use apc\retsrabbit\converters\ListingConverter;
-use apc\retsrabbit\ViewModel;
+use apc\retsrabbit\viewmodels\ViewModel;
 use Craft;
 use craft\web\twig\variables\Paginate;
 

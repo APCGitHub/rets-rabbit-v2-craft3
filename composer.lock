@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a7ef0e55860ee4e1f0c48c0d5cbb0d0",
+    "content-hash": "743ed5cf768494f9483b408c64813276",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -1503,16 +1503,17 @@
         },
         {
             "name": "rets-rabbit/cms-plugin-core",
-            "version": "1.0.9",
+            "version": "2.0.0",
             "dist": {
                 "type": "path",
                 "url": "/home/vagrant/plugins/rets-rabbit-plugin-core",
-                "reference": "fd108555245ee0b14a78f99fcce0784baf948cd5",
+                "reference": "21471dc67342fe0de6923bb40bb2ba3ec0d98346",
                 "shasum": null
             },
             "require": {
+                "ext-json": "*",
                 "guzzlehttp/guzzle": "^6.2",
-                "php": ">=5.6",
+                "php": ">=7.0",
                 "symfony/yaml": "^3.3"
             },
             "require-dev": {
@@ -1532,7 +1533,7 @@
             "authors": [
                 {
                     "name": "Andrew Clinton",
-                    "email": "aclinton@anecka.com",
+                    "email": "ddrew.clinton@gmail.com",
                     "role": "Developer"
                 }
             ],
