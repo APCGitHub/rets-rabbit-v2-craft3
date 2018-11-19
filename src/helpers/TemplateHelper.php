@@ -2,7 +2,7 @@
 
 namespace apc\retsrabbit\helpers;
 
-use apc\retsrabbit\converters\ListingConverter;
+use apc\retsrabbit\viewmodels\MultipleListingsViewModel;
 use apc\retsrabbit\viewmodels\ViewModel;
 use Craft;
 use craft\web\twig\variables\Paginate;
@@ -27,7 +27,7 @@ class TemplateHelper
         $paginateV   = new Paginate();
         $currentPage = Craft::$app->request->getPageNum();
         $search      = RetsRabbit::$plugin->getSearches()->getById($criteria->getSearchId());
-        $viewModel   = new ViewModel();
+        $viewModel   = new MultipleListingsViewModel();
 
         if ($search) {
             $savedSearchParams = json_decode($search->params, true);
@@ -61,8 +61,8 @@ class TemplateHelper
             if ($total === false) {
                 $res = RetsRabbit::$plugin->getProperties()->search($countParams);
 
-                if ($res->didSucceed()) {
-                    $total = $res->getResponse()['@retsrabbit.total_results'];
+                if ($res->wasSuccessful()) {
+                    $total = $res->arrayBody()['@retsrabbit.total_results'];
 
                     RetsRabbit::$plugin->getCache()->set($countCacheKey, $total, 3600);
                 } else {
@@ -74,13 +74,10 @@ class TemplateHelper
             if ($listingData === false) {
                 $res = RetsRabbit::$plugin->getProperties()->search($queryParams);
 
-                if (!$res->didSucceed()) {
-                    $viewModel->errors = RetsRabbit::$plugin->getApiResponses()->getResponseErrors($res);
+                if (!$res->wasSuccessful()) {
+                    $viewModel->error = $res->error();
                 } else {
-                    $viewModel->data = (new ListingConverter())->parseCollection(
-                        $res->getResponse()['value'] ?? [],
-                        new ListingConverter()
-                    );
+                    $viewModel->decorateResource($res->listings());
 
                     RetsRabbit::$plugin->getCache()->set($searchCacheKey, $viewModel, 3600);
                 }
