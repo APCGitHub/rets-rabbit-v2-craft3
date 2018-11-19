@@ -2,10 +2,10 @@
 
 namespace apc\retsrabbit\variables;
 
-use apc\retsrabbit\converters\ListingConverter;
 use apc\retsrabbit\models\Search;
 use apc\retsrabbit\RetsRabbit;
 use apc\retsrabbit\viewmodels\MultipleListingsViewModel;
+use apc\retsrabbit\viewmodels\SingleListingViewModel;
 use apc\retsrabbit\viewmodels\ViewModel;
 use Craft;
 
@@ -44,14 +44,14 @@ class PropertiesVariable
             }
         }
 
-        $viewModel = new ViewModel();
+        $viewModel = new SingleListingViewModel();
 
         $res = RetsRabbit::$plugin->getProperties()->find($id, $resoParams);
 
         if (!$res->wasSuccessful()) {
-            $viewModel->errors = RetsRabbit::$plugin->getApiResponses()->getResponseErrors($res);
+            $viewModel->error = $res->error();
         } else {
-            $viewModel->data = (new ListingConverter())->parse($res->getResponse());
+            $viewModel->decorateResource($res->listing());
 
             if ($useCache) {
                 $ttl = $cacheDuration ?: $this->cacheDuration;
@@ -112,18 +112,18 @@ class PropertiesVariable
      * @param array $overrides
      * @param  bool $useCache
      * @param  mixed $cacheDuration
-     * @return \apc\retsrabbit\viewmodels\ViewModel
+     * @return MultipleListingsViewModel
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
     public function search(
         $id = '', $overrides = [], $useCache = false, $cacheDuration = null
-    ): ViewModel {
+    ): MultipleListingsViewModel {
         /** @var Search $search */
         $search = RetsRabbit::$plugin->getSearches()->getById($id);
 
         if (!$search) {
-            return new ViewModel();
+            return new MultipleListingsViewModel();
         }
 
         $currentPage   = Craft::$app->request->getPageNum();
@@ -149,15 +149,12 @@ class PropertiesVariable
         }
 
         $res       = RetsRabbit::$plugin->getProperties()->search($params);
-        $viewModel = new ViewModel();
+        $viewModel = new MultipleListingsViewModel();
 
-        if (!$res->didSucceed()) {
-            $viewModel->errors = RetsRabbit::$plugin->getApiResponses()->getResponseErrors($res);
+        if (!$res->wasSuccessful()) {
+            $viewModel->error = $res->error();
         } else {
-            $viewModel->data = (new ListingConverter())->parseCollection(
-                $res->getResponse()['value'] ?? [],
-                new ListingConverter()
-            );
+            $viewModel->decorateResource($res->listings());
 
             if ($useCache) {
                 $ttl = $cacheDuration ?: $this->cacheDuration;
