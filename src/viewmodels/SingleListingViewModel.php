@@ -34,7 +34,7 @@ class SingleListingViewModel extends ViewModel
     /**
      * @param $data
      */
-    protected function decorateResource($data)
+    public function decorateResource($data)
     {
         $this->data = $this->getDecorator()->setResource($data);
     }
