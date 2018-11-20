@@ -51,5 +51,7 @@ class ListingResourceDecorator implements ResourceDecorator
         if(!property_exists($this, $property)) {
             return $this->resource->{$property};
         }
+
+        return null;
     }
 }
