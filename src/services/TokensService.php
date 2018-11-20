@@ -20,14 +20,11 @@ class TokensService extends Component
     /**
      * Constructor
      *
-     * @param $config
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\di\NotInstantiableException
      */
-    public function __construct($config)
+    public function __construct()
     {
-        parent::__construct($config);
-
         $this->api = Yii::$container->get('retsRabbitApi');
     }
 
