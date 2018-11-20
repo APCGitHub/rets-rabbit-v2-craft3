@@ -118,7 +118,7 @@ class PropertiesVariable
      */
     public function search(
         $id = '', $overrides = [], $useCache = false, $cacheDuration = null
-    ): MultipleListingsViewModel {
+    ): ViewModel {
         /** @var Search $search */
         $search = RetsRabbit::$plugin->getSearches()->getById($id);
 
