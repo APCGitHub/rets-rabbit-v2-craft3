@@ -62,6 +62,7 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 {% elseif not viewModel.hasData() %}
     {# No data returned in response #}
 {% else %}
+    {% set listings = viewModel.data %}
     {% for listing in listings %}
         <div class="card">
             <div class="card-header">
