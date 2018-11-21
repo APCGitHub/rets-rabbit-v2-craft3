@@ -15,13 +15,12 @@ class FormsService extends Component
 	 * @param  $params array
 	 * @return array
 	 */
-	public function toReso($params = array())
+	public function toReso($params = [])
 	{
 		$reso = (new QueryParser)->format($params);
-		$reso = array_filter($reso, function ($value) {
-			return !empty($value);
-		});
 
-		return $reso;
+		return array_filter($reso, function ($value) {
+            return !empty($value);
+        });
 	}
 }
