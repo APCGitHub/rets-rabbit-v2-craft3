@@ -39,7 +39,7 @@ class ListingResourceDecorator implements ResourceDecorator
      */
     public function __isset($name)
     {
-        return $name !== 'resource' && $name !== 'hasPhotos';
+        return $name !== 'resource' && $name !== 'hasPhotos' && $name !== 'setResource';
     }
 
     /**
