@@ -3,13 +3,12 @@
 This plugin allows you to connect to the Rets Rabbit API(v2) in order to display your listings in a clean and intuitive way.
 
 ## Installation
-1. Clone or Download the plugin.
-2. Copy `craft/plugins/retsrabbit` to your plugins folder.
-3. Install plugin in the Craft Control Panel under Settings > Plugins
-4. Go to the Rets Rabbit settings page and add your Client ID & Secret.
+```$xslt
+composer require apc/rets-rabbit
+```
 
 ### Requirements
-The Rets Rabbit plugin requires at least php 5.6.
+The Rets Rabbit plugin requires at least php 7.0 in accordance with minimum Craft 3 PHP requirements.
 
 ## Documentation
 You can interact with the Rets Rabbit API through the `PropertiesVariable` which has the following methods.
@@ -29,12 +28,15 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 **$cacheDuration** - Specify how long you would like the results cached for in seconds. The default is one hour.
 
 ```html
-{% set listing = craft.retsRabbit.properties.find('123abc', {'$select': 'ListingId, ListPrice'}, true) %}
+{% set viewModel = craft.retsRabbit.properties.find('123abc', {'$select': 'ListingId, ListPrice'}, true) %}
 
-{% if listing is not null %}
-    {{listing.ListingId}}
-{% else %}
+{% if viewModel.hasErrors() %}
     {# An error occurred, let the user know #}
+{% elseif not viewModel.hasData() %}
+    {# No data returned from request #}
+{% else %}
+    {% set listing = viewModel.data %}
+    {{listing.ListingId}}
 {% endif %}
 
 ```
@@ -48,30 +50,28 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 **$cacheDuration** - Specify how long you would like the results cached for in seconds. The default is one hour.
 
 ```html
-{% set listings = craft.retsRabbit.properties.query({
+{% set viewModel = craft.retsRabbit.properties.query({
     '$select': 'ListingId, ListPrice, PublicRemarks, StateOrProvince, City',
     '$filter': 'ListPrice ge 150000 and ListPrice le 175000 and BedroomsTotal ge 3',
     '$orderby': 'ListPrice',
     '$top': 12
 }) %}
 
-{% if listings is null %}
+{% if viewModel.hasErrors() %}
     {# An error occurred #}
+{% elseif not viewModel.hasData() %}
+    {# No data returned in response #}
 {% else %}
-    {% if listings | length %}
-        {% for listing in listings %}
-            <div class="card">
-                <div class="card-header">
-                    {{listing.ListingId}}
-                </div>
-                <div class="card-content">
-                    {{listing.ListPrice}}
-                </div>
+    {% for listing in listings %}
+        <div class="card">
+            <div class="card-header">
+                {{listing.ListingId}}
             </div>
-        {% endfor %}
-    {% else %}
-        {# No results for the search #}
-    {% endif %}
+            <div class="card-content">
+                {{listing.ListPrice}}
+            </div>
+        </div>
+    {% endfor %}
 {% endif %}
 ```
 
@@ -87,7 +87,7 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 
 ```html
 {# Results URL (for example): /search/results/4 #}
-{% set searchId = craft.request.getSegment(3) %}
+{% set searchId = craft.app.request.getSegment(3) %}
     
 {% if not craft.retsRabbit.searches.exists(searchId) %}
     {% redirect '404' %}
@@ -95,21 +95,19 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 
 {% set perPage = 12 %}
 
-{% set results = craft.retsRabbit.properties.search(searchId, {
+{% set viewModel = craft.retsRabbit.properties.search(searchId, {
     '$top': perPage,
     '$orderby': 'ListPrice desc'
 }, true) %}
 
-{% if results is null %}
+{% if viewModel.hasErrors() %}
     {# An error occurred #}
+{% elseif not viewModel.hasData() %}
+    {# Not results returned from request #}
 {% else %}
-    {% if results | length %}
-        {% for listing in results %}
-            {# Show listing data #}
-        {% endfor %}
-    {% else %}
-        {# No results for the search #}
-    {% endif %}
+    {% for listing in results %}
+        {# Show listing data #}
+    {% endfor %}
 {% endif %}
 ```
 
@@ -201,7 +199,7 @@ The following example contains markup which will generate a form having the foll
 
 ```html
 <form method="POST" action="">
-    {{getCsrfInput()}}
+    {{csrfInput()}}
     <input type="hidden" name="action" value="retsRabbit/properties/search">
     <input type="hidden" name="redirect" value="search/results/{searchId}">
     <div class="field">
@@ -318,18 +316,18 @@ We used [Bulma.io](https://bulma.io/) in this example, but the above markup will
 Because the Rets Rabbit plugin fetches data from an outside data source, it's not possible to use the native Craft pagination tag. We still believe it is very important to have the ability to paginate your results, so we created a special `rrPaginate` tag which works and looks like the native `paginate` tag in many ways.
 
 ```html
-{% rrPaginate searchCriteria as pageInfo, results %}
+{% rrPaginate searchCriteria as pageInfo, viewModel %}
 ```
 
 #### Parameters
 
 * [searchCriteria](#searchcriteria) - An instance of `RetsRabbit_SearchCriteriaModel`
 * pageInfo - `Craft\PaginationVariable` just like with the native `pagination` tag
-* results - Array of results, will be null if an error occurred and an empty array if no results were found.
+* viewModel - A view model instance containing possible search results or errors from the API
 
 #### SearchCriteria
 
-The main difference in our `rrPaginate` tag compared to the native `paginate` tag is that it expects a `RetsRabbit_SearchCriteriaModel` as the first parameter. You can get an instance of a search criteria model in the following manner.
+The main difference in our `rrPaginate` tag compared to the native `paginate` tag is that it expects a `SearchCriteriaModel` as the first parameter. You can get an instance of a search criteria model in the following manner.
 
 ```html
 {% set criteriaModel = craft.retsRabbit.searches.criteria() %}
@@ -361,7 +359,7 @@ Once you have an instance of the criteria model, you can build your query in a f
 #### Complete Example
 
 ```html
-{% set searchId = craft.request.getSegment(3) %}
+{% set searchId = craft.app.request.getSegment(3) %}
     
 {% if not craft.retsRabbit.searches.exists(searchId) %}
     {% redirect '404' %}
@@ -370,15 +368,15 @@ Once you have an instance of the criteria model, you can build your query in a f
 {% set criteriaModel = craft.retsRabbit.searches.criteria() %}
 {% set criteria = criteriaModel
     .forId(searchId)
-    .select('ListPrice', 'PublicRemarks', 'BathroomsFull', 'BedroomsTotal', 'ListingId', 'photos')
+    .select('ListPrice', 'StreetNumber', 'StateOrProvince', 'StreetName', 'StreetDirSuffix', 'PublicRemarks', 'BathroomsFull', 'BedroomsTotal', 'ListingId', 'photos')
     .orderBy('ListPrice', 'desc')
     .limit(24) 
     .countBy('exact')
 %}
 
-{% rrPaginate criteria as pageInfo, results %}
+{% rrPaginate criteria as pageInfo, viewModel %}
 
-{% if results is null %}
+{% if viewModel.hasErrors() %}
     <article class="message is-danger">
         <div class="message-header">
             <p>Uh oh...</p>
@@ -387,7 +385,7 @@ Once you have an instance of the criteria model, you can build your query in a f
             We could not process your request. Please try again.
         </div>
     </article>
-{% elseif results|length == 0 %}
+{% elseif not viewModel.hasData() %}
     <article class="message is-warning">
         <div class="message-header">
             <p>Hmm..</p>
@@ -397,8 +395,9 @@ Once you have an instance of the criteria model, you can build your query in a f
         </div>
     </article>
 {% else %}
+    {% set listings = viewModel.data %}
     <div class="columns is-multiline">
-        {% for listing in results %}
+        {% for listing in listings %}
             <div class="column is-4">
                 {% include "properties/includes/_grid-item" %}
             </div>
