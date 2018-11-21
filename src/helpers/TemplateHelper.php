@@ -3,7 +3,6 @@
 namespace apc\retsrabbit\helpers;
 
 use apc\retsrabbit\viewmodels\MultipleListingsViewModel;
-use apc\retsrabbit\viewmodels\ViewModel;
 use Craft;
 use craft\web\twig\variables\Paginate;
 
