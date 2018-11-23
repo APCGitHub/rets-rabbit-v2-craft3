@@ -310,7 +310,7 @@ The following example contains markup which will generate a form having the foll
 
 We used [Bulma.io](https://bulma.io/) in this example, but the above markup will generate something like the following.
 
-![Search Form](screenshots/search-form.png "Search Form")
+[Search Form](screenshots/search-form.png "Search Form")
 
 ### Search Pagination
 
@@ -452,7 +452,7 @@ Once you have an instance of the criteria model, you can build your query in a f
 
 We used [Bulma.io](https://bulma.io/) in this example, but the above markup will generate something like the following.
 
-![Pagination](screenshots/pagination.png "Pagination")
+[Pagination](screenshots/pagination.png "Pagination")
 
 ### Other Variables
 
