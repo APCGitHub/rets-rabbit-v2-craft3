@@ -27,6 +27,7 @@ class TemplateHelper
         $currentPage = Craft::$app->request->getPageNum();
         $search      = RetsRabbit::$plugin->getSearches()->getById($criteria->getSearchId());
         $viewModel   = new MultipleListingsViewModel();
+        $ttl         = 3600;
 
         if ($search) {
             $savedSearchParams = json_decode($search->params, true);
@@ -61,9 +62,9 @@ class TemplateHelper
                 $res = RetsRabbit::$plugin->getProperties()->search($countParams);
 
                 if ($res->wasSuccessful()) {
-                    $total = $res->arrayBody()['@retsrabbit.total_results'];
+                    $total = $res->arrayBody()['@retsrabbit.total_results'] ?? 0;
 
-                    RetsRabbit::$plugin->getCache()->set($countCacheKey, $total, 3600);
+                    RetsRabbit::$plugin->getCache()->set($countCacheKey, $total, $ttl);
                 } else {
                     $countError = true;
                 }
@@ -78,7 +79,7 @@ class TemplateHelper
                 } else {
                     $viewModel->decorateResource($res->listings());
 
-                    RetsRabbit::$plugin->getCache()->set($searchCacheKey, $viewModel, 3600);
+                    RetsRabbit::$plugin->getCache()->set($searchCacheKey, $viewModel, $ttl);
                 }
             } else {
                 $viewModel = $listingData;
