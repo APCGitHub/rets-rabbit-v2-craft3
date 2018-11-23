@@ -89,21 +89,21 @@ class Install extends Migration
     protected function createTables(): bool
     {
         $tablesCreated = false;
-        $tableSchema = Craft::$app->db->schema->getTableSchema('{{%rets_rabbit_searches}}');
+        $tableSchema   = Craft::$app->db->schema->getTableSchema('{{%rets_rabbit_searches}}');
 
         if ($tableSchema === null) {
             $tablesCreated = true;
-            
+
             $this->createTable(
                 '{{%rets_rabbit_searches}}',
                 [
-                    'id'            => $this->primaryKey(),
-                    'type'          => $this->string(32)->notNull()->defaultValue('property'),
-                    'params'        => $this->text(),
-                    'siteId'        => $this->integer()->notNull(),
-                    'dateCreated'   => $this->dateTime()->notNull(),
-                    'dateUpdated'   => $this->dateTime()->notNull(),
-                    'uid'           => $this->uid(),
+                    'id'          => $this->primaryKey(),
+                    'type'        => $this->string(32)->notNull()->defaultValue('property'),
+                    'params'      => $this->text(),
+                    'siteId'      => $this->integer()->notNull(),
+                    'dateCreated' => $this->dateTime()->notNull(),
+                    'dateUpdated' => $this->dateTime()->notNull(),
+                    'uid'         => $this->uid(),
                 ]
             );
         }
@@ -146,7 +146,7 @@ class Install extends Migration
      */
     protected function removeTables()
     {
-    // retsrabbit_retsrabbitrecord table
+        // retsrabbit_retsrabbitrecord table
         $this->dropTableIfExists('{{%rets_rabbit_searches}}');
     }
 }
