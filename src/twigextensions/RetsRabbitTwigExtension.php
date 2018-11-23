@@ -1,18 +1,6 @@
 <?php
-/**
- * Rets Rabbit plugin for Craft CMS 3.x
- *
- * Display real estate listings in your craft site in a simple and intuitive way.
- *
- * @link      http://anecka.com
- * @copyright Copyright (c) 2017 Anecka, LLC
- */
 
 namespace apc\retsrabbit\twigextensions;
-
-use apc\retsrabbit\RetsRabbit;
-
-use Craft;
 
 /**
  * Twig can be extended in many ways; you can add extra tags, filters, tests, operators,

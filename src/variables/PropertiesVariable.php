@@ -141,6 +141,7 @@ class PropertiesVariable
         $cacheKey = 'searches/' . hash('sha256', serialize($params));
 
         if ($useCache) {
+            /** @var MultipleListingsViewModel $viewModel */
             $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
             if ($viewModel !== false) {

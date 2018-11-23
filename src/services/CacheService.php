@@ -16,11 +16,13 @@ class CacheService extends Component
 	private $basePath = '/rets-rabbit/';
 
     /**
-     * @param string
-     * @param mixed
-     * @param int
-     * @param boolean
+     * @param $id
+     * @param $value
+     * @param int $expire
+     * @param bool $secure
      * @return bool
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
 	public function set($id, $value, $expire = 3600, $secure = false): bool
 	{
