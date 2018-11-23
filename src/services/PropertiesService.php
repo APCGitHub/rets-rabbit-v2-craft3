@@ -8,6 +8,7 @@ use Apc\RetsRabbit\Core\Resources\PropertiesResource;
 use Apc\RetsRabbit\Core\Responses\MultipleListingResponse;
 use Apc\RetsRabbit\Core\Responses\SingleListingResponse;
 use Apc\RetsRabbit\Core\RetsRabbitApi;
+use Apc\RetsRabbit\Core\TransferObjects\AccessToken;
 use apc\retsrabbit\RetsRabbit;
 
 use Craft;
@@ -45,11 +46,12 @@ class PropertiesService extends Component
         if (!$res->wasSuccessful() && $res->error()->code === 'permission') {
             Craft::warning('A permission error occurred.', __METHOD__);
 
-            $success = RetsRabbit::$plugin->getTokens()->refresh();
+            /** @var AccessToken $token */
+            $token = RetsRabbit::$plugin->getTokens()->refresh();
 
-            if ($success !== null) {
+            if ($token !== null && $token->access_token !== null) {
                 $res = $this->api->property()->search($params, [
-                    'Authorization' => 'Bearer ' . $success
+                    'Authorization' => 'Bearer ' . $token->access_token
                 ]);
             } else {
                 Craft::error('Could not refresh the token during a search.', __METHOD__);
@@ -73,11 +75,12 @@ class PropertiesService extends Component
         if (!$res->wasSuccessful() && $res->error()->code === 'permission') {
             Craft::warning('A permission error occurred.', __METHOD__);
 
-            $success = RetsRabbit::$plugin->getTokens()->refresh();
+            /** @var AccessToken $token */
+            $token = RetsRabbit::$plugin->getTokens()->refresh();
 
-            if ($success !== null) {
-                $res   = $this->api->property()->single($id, $params, [
-                    'Authorization' => 'Bearer ' . $token
+            if ($token !== null && $token->access_token) {
+                $res = $this->api->property()->single($id, $params, [
+                    'Authorization' => 'Bearer ' . $token->access_token
                 ]);
             } else {
                 Craft::error('Could not refresh the token during property lookup.', __METHOD__);
