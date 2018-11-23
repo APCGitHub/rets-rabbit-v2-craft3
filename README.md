@@ -322,13 +322,14 @@ Because the Rets Rabbit plugin fetches data from an outside data source, it's no
 
 #### Parameters
 
-* [searchCriteria](#searchcriteria) - An instance of `RetsRabbit_SearchCriteriaModel`
-* pageInfo - `Craft\PaginationVariable` just like with the native `pagination` tag
+* [searchCriteria](#searchcriteria) - An instance of `SearchCriteriaModel`
+* pageInfo - `craft\web\twig\variables\Paginate` just like with the native `pagination` tag
 * viewModel - A view model instance containing possible search results or errors from the API
 
 #### SearchCriteria
 
-The main difference in our `rrPaginate` tag compared to the native `paginate` tag is that it expects a `SearchCriteriaModel` as the first parameter. You can get an instance of a search criteria model in the following manner.
+The main difference in our `rrPaginate` tag compared to the native `paginate` tag is that it expects a `SearchCriteriaModel` 
+as the first parameter. You can get an instance of a search criteria model in the following manner.
 
 ```html
 {% set criteriaModel = craft.retsRabbit.searches.criteria() %}
@@ -349,7 +350,7 @@ Once you have an instance of the criteria model, you can build your query in a f
 %}
 ```
 
-**Methods:** A `RetsRabbit_SearchCriteriaModel` has the following methods available for building a paginated search query.
+**Methods:** A `SearchCriteriaModel` has the following methods available for building a paginated search query.
 
 * forId($searchId) - **(required)** Pass in the search id, usually from the url
 * select(...$fields) - Pass in a list of fields you specifically want from the API
