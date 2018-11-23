@@ -106,6 +106,7 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 {% elseif not viewModel.hasData() %}
     {# Not results returned from request #}
 {% else %}
+    {% set results = viewModel.data %}
     {% for listing in results %}
         {# Show listing data #}
     {% endfor %}
