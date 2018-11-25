@@ -11,8 +11,8 @@
         "rets rabbit"
     ],
     "support": {
-        "docs": "https://github.com/rets-rabbit-v2-craft3/rets-rabbit/blob/master/README.md",
-        "issues": "https://github.com/rets-rabbit-v2-craft3/rets-rabbit/issues"
+        "docs": "https://github.com/APCGitHub/rets-rabbit-v2-craft3/blob/master/README.md",
+        "issues": "https://github.com/APCGitHub/rets-rabbit-v2-craft3/issues"
     },
     "license": "MIT",
     "authors": [
@@ -38,7 +38,7 @@
         "schemaVersion": "1.0.0",
         "hasCpSettings": true,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/rets-rabbit-v2-craft3/rets-rabbit/master/CHANGELOG.md",
+        "changelogUrl": "https://github.com/APCGitHub/rets-rabbit-v2-craft3/blob/master/CHANGELOG.md",
         "class": "apc\\retsrabbit\\RetsRabbit"
     },
     "repositories": [
