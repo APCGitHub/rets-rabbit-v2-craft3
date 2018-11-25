@@ -9,7 +9,7 @@ namespace apc\retsrabbit\twigextensions;
  *
  * http://twig.sensiolabs.org/doc/advanced.html
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */

@@ -9,7 +9,7 @@ use craft\base\Model;
  *
  * https://craftcms.com/docs/plugins/models
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */

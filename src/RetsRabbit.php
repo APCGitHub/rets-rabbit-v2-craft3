@@ -31,7 +31,7 @@ use yii\di\Container;
 /**
  * https://craftcms.com/docs/plugins/introduction
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */

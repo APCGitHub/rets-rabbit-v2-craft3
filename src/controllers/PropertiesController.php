@@ -20,7 +20,7 @@ use craft\web\Controller;
  *
  * https://craftcms.com/docs/plugins/controllers
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */

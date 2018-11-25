@@ -20,7 +20,7 @@ namespace apc\retsrabbit\variables;
  *
  * https://craftcms.com/docs/plugins/variables
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */

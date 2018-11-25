@@ -24,7 +24,7 @@ use craft\db\Migration;
  * If you need to perform any additional actions on install/uninstall, override the
  * safeUp() and safeDown() methods.
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */
