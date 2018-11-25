@@ -39,7 +39,8 @@
         "hasCpSettings": true,
         "hasCpSection": false,
         "changelogUrl": "https://github.com/APCGitHub/rets-rabbit-v2-craft3/blob/master/CHANGELOG.md",
-        "class": "apc\\retsrabbit\\RetsRabbit"
+        "class": "apc\\retsrabbit\\RetsRabbit",
+        "developer": "Andrew Clinton"
     },
     "repositories": [
         {
