@@ -9,6 +9,7 @@ use Apc\RetsRabbit\Core\Responses\MultipleListingResponse;
 use Apc\RetsRabbit\Core\Responses\SingleListingResponse;
 use Apc\RetsRabbit\Core\RetsRabbitApi;
 use Apc\RetsRabbit\Core\TransferObjects\AccessToken;
+use apc\retsrabbit\exceptions\MissingClientCredentials;
 use apc\retsrabbit\RetsRabbit;
 
 use Craft;
@@ -38,6 +39,8 @@ class PropertiesService extends Component
      */
     public function search($params = []): MultipleListingResponse
     {
+        $this->_checkCredentialsSet();
+
         $token = RetsRabbit::$plugin->getCache()->get('access_token');
         $res   = $this->api->property()->search($params, [
             'Authorization' => 'Bearer ' . $token
@@ -67,6 +70,8 @@ class PropertiesService extends Component
      */
     public function find($id = '', $params = []): SingleListingResponse
     {
+        $this->_checkCredentialsSet();
+
         $token = RetsRabbit::$plugin->getCache()->get('access_token');
         $res   = $this->api->property()->single($id, $params, [
             'Authorization' => 'Bearer ' . $token
@@ -88,5 +93,17 @@ class PropertiesService extends Component
         }
 
         return $res;
+    }
+
+    /**
+     * @throws MissingClientCredentials
+     */
+    private function _checkCredentialsSet(): void
+    {
+        $settings = RetsRabbit::$plugin->getSettings();
+
+        if(empty($settings->clientId) || empty($settings->clientSecret)) {
+            throw new MissingClientCredentials();
+        }
     }
 }

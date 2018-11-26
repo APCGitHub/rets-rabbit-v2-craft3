@@ -12,6 +12,7 @@
 namespace apc\retsrabbit;
 
 use Apc\RetsRabbit\Core\ApiConfig;
+use Apc\RetsRabbit\Core\Responses\MultipleListingResponse;
 use Apc\RetsRabbit\Core\RetsRabbitApi;
 use apc\retsrabbit\models\Settings;
 use apc\retsrabbit\traits\PluginTrait;
@@ -149,10 +150,16 @@ class RetsRabbit extends Plugin
      */
     protected function settingsHtml(): string
     {
-        $valid     = RetsRabbit::getInstance()->getTokens()->isValid();
-        $canHitApi = RetsRabbit::getInstance()->getProperties()->search([
-            '$top' => 1
-        ]);
+        $valid = RetsRabbit::getInstance()->getTokens()->isValid();
+
+        try {
+            /** @var MultipleListingResponse $canHitApi */
+            $canHitApi = RetsRabbit::getInstance()->getProperties()->search([
+                '$top' => 1
+            ])->wasSuccessful();
+        } catch (\Exception $e) {
+            $canHitApi = false;
+        }
 
         return Craft::$app->getView()->renderTemplate(
             'rets-rabbit/settings',
