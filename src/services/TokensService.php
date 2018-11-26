@@ -32,6 +32,8 @@ class TokensService extends Component
      * Try to fetch a new access token from the RR API.
      *
      * @return mixed|null
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function refresh()
     {
