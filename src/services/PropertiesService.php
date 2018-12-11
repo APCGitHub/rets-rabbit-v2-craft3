@@ -1,116 +1,109 @@
-<?php
+<?php /** @noinspection ALL */
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
-use Anecka\RetsRabbit\Core\ApiService;
-use Anecka\RetsRabbit\Core\Bridges\CraftBridge;
-use Anecka\RetsRabbit\Core\Resources\PropertiesResource;
-use anecka\retsrabbit\RetsRabbit;
+use Apc\RetsRabbit\Core\ApiService;
+use Apc\RetsRabbit\Core\Bridges\CraftBridge;
+use Apc\RetsRabbit\Core\Resources\PropertiesResource;
+use Apc\RetsRabbit\Core\Responses\MultipleListingResponse;
+use Apc\RetsRabbit\Core\Responses\SingleListingResponse;
+use Apc\RetsRabbit\Core\RetsRabbitApi;
+use Apc\RetsRabbit\Core\TransferObjects\AccessToken;
+use apc\retsrabbit\exceptions\MissingClientCredentials;
+use apc\retsrabbit\RetsRabbit;
 
 use Craft;
 use craft\base\Component;
 
 class PropertiesService extends Component
 {
-	/**
-	 * The api service from the core RR library
-	 * 
-	 * @var ApiService
-	 */
-	private $api;
+    /**
+     * The api service from the core RR library
+     *
+     * @var RetsRabbitApi
+     */
+    private $api;
 
-	/**
-	 * The properties resource endpoint
-	 * 
-	 * @var PropertiesResource
-	 */
-	private $resource;
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        /** @var RetsRabbitApi api */
+        $this->api = \Yii::$container->get('retsRabbitApi');
+    }
 
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$settings = RetsRabbit::$plugin->getSettings();
-		$bridge = new CraftBridge;
+    /**
+     * @param  array
+     * @return MultipleListingResponse
+     */
+    public function search($params = []): MultipleListingResponse
+    {
+        $this->_checkCredentialsSet();
 
-		//Set the token fetcher function so the core lib can grab tokens
-		//from cache on the plugin's behalf
-		$bridge->setTokenFetcher(function () {
-			return RetsRabbit::$plugin->cache->get('access_token', true);
-		});
+        $token = RetsRabbit::$plugin->getCache()->get('access_token');
+        $res   = $this->api->property()->search($params, [
+            'Authorization' => 'Bearer ' . $token
+        ]);
 
-		//Load the Craft Bridge into the ApiService
-		$this->api = new ApiService($bridge);
+        if (!$res->wasSuccessful() && $res->error()->code === 'permission') {
+            Craft::warning('A permission error occurred.', __METHOD__);
 
-		//Allow developer to override base endpoint
-		if($settings->apiEndpoint) {
-			$this->api->overrideBaseApiEndpoint($settings->apiEndpoint);
-		}
+            /** @var AccessToken $token */
+            $token = RetsRabbit::$plugin->getTokens()->refresh();
 
-		//Instantiate the PropertiesResource
-		$this->resource = new PropertiesResource($this->api);
-	}
+            if ($token !== null && $token->access_token !== null) {
+                $res = $this->api->property()->search($params, [
+                    'Authorization' => 'Bearer ' . $token->access_token
+                ]);
+            } else {
+                Craft::error('Could not refresh the token during a search.', __METHOD__);
+            }
+        }
 
-	/**
-	 * @param  array
-	 * @return array
-	 */
-	public function search($params = array())
-	{
-		$res = $this->resource->search($params);
+        return $res;
+    }
 
-		if($res->didFail()) {
-			$contents = $res->getResponse();
+    /**
+     * @param  string
+     * @return SingleListingResponse
+     */
+    public function find($id = '', $params = []): SingleListingResponse
+    {
+        $this->_checkCredentialsSet();
 
-			if(isset($contents['error']) && isset($contents['error']['code'])) {
-				Craft::warning('A permission error occurred.', __METHOD__);
-				
-				$code = $contents['error']['code'];
+        $token = RetsRabbit::$plugin->getCache()->get('access_token');
+        $res   = $this->api->property()->single($id, $params, [
+            'Authorization' => 'Bearer ' . $token
+        ]);
 
-				if($code == 'permission') {
-					$success = RetsRabbit::$plugin->tokens->refresh();
+        if (!$res->wasSuccessful() && $res->error()->code === 'permission') {
+            Craft::warning('A permission error occurred.', __METHOD__);
 
-					if(!is_null($success)) {
-						$res = $this->resource->search($params);
-					} else {
-						Craft::error('Could not refresh the token during a search.', __METHOD__);
-					}
-				}
-			}
-		}
+            /** @var AccessToken $token */
+            $token = RetsRabbit::$plugin->getTokens()->refresh();
 
-		return $res;
-	}
+            if ($token !== null && $token->access_token) {
+                $res = $this->api->property()->single($id, $params, [
+                    'Authorization' => 'Bearer ' . $token->access_token
+                ]);
+            } else {
+                Craft::error('Could not refresh the token during property lookup.', __METHOD__);
+            }
+        }
 
-	/**
-	 * @param  string
-	 * @return array
-	 */
-	public function find($id = '', $params = array())
-	{
-		$res = $this->resource->single($id, $params);
+        return $res;
+    }
 
-		if($res->didFail()) {
-			$contents = $res->getResponse();
+    /**
+     * @throws MissingClientCredentials
+     */
+    private function _checkCredentialsSet(): void
+    {
+        $settings = RetsRabbit::$plugin->getSettings();
 
-			if(isset($contents['error']) && isset($contents['error']['code'])) {
-				Craft::warning('A permission error occurred.', __METHOD__);
-				
-				$code = $contents['error']['code'];
-
-				if($code == 'permission') {
-					$success = RetsRabbit::$plugin->tokens->refresh();
-
-					if(!is_null($success)) {
-						$res = $this->resource->single($id, $params);
-					} else {
-						Craft::error('Could not refresh the token during property lookup.', __METHOD__);
-					}
-				}
-			}
-		}
-
-		return $res;
-	}
+        if(empty($settings->clientId) || empty($settings->clientSecret)) {
+            throw new MissingClientCredentials();
+        }
+    }
 }

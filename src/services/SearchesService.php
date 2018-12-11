@@ -1,133 +1,126 @@
 <?php
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
 use Craft;
-use Exception;
 
-use anecka\retsrabbit\exceptions\InvalidSearchException;
-use anecka\retsrabbit\models\Search;
-use anecka\retsrabbit\records\SearchRecord;
+use apc\retsrabbit\exceptions\InvalidSearchException;
+use apc\retsrabbit\models\Search;
+use apc\retsrabbit\records\SearchRecord;
 use craft\base\Component;
 
 class SearchesService extends Component
 {
-	/**
-	 * Create a new search model
-	 * 
-	 * @param  array
-	 * @return Search
-	 */
-	public function newSearch($attributes = array())
-	{
-		$model = new Search();
-		
-		if(isset($attributes['params'])) {
-			$attributes['params'] = json_encode($attributes['params']);
-		}
+    /**
+     * Create a new search model
+     *
+     * @param  array
+     * @return Search
+     */
+    public function newSearch($attributes = []): Search
+    {
+        $model = new Search();
 
-		$model->setAttributes($attributes);
+        if (isset($attributes['params'])) {
+            $attributes['params'] = json_encode($attributes['params']);
+        }
 
-		return $model;
-	}
+        foreach($attributes as $k => $v) {
+            $model->$k = $v;
+        }
 
-	/**
-	 * Create a new search model with a 'property' type
-	 * 
-	 * @param  array
-	 * @return Search
-	 */
-	public function newPropertySearch($attributes = array())
-	{
-		$attributes['type'] = 'property';
+        $model->params = $attributes['params'];
+        $model->siteId = Craft::$app->sites->currentSite->id;
 
-		return $this->newSearch($attributes);
-	}
+        return $model;
+    }
 
-	/**
-	 * Save a search
-	 * 
-	 * @param  Search
-	 * @return bool
-	 */
-	public function saveSearch(Search $model, bool $runValidation): bool
-	{
-		if($runValidation && $model->validate()) {
-			Craft::info('Search not saved due to validation error.', __METHOD__);
+    /**
+     * Create a new search model with a 'property' type
+     *
+     * @param  array
+     * @return Search
+     */
+    public function newPropertySearch($attributes = []): Search
+    {
+        $attributes['type'] = 'property';
 
-			return false;
-		}
+        return $this->newSearch($attributes);
+    }
 
-		if($model->id) {
-			$record = SearchRecord::find()
-				->where(['id' => $model->id])
-				->one();
+    /**
+     * Save a search
+     *
+     * @param Search $model
+     * @param bool $runValidation
+     * @return bool
+     * @throws InvalidSearchException
+     */
+    public function saveSearch(Search $model, bool $runValidation = true): bool
+    {
+        if ($runValidation && !$model->validate()) {
+            Craft::info('Search not saved due to validation error.', __METHOD__);
 
-			if(!$record) {
-				throw new InvalidSearchException("No search exists with the ID '{$model->id}'");
-			}
+            return false;
+        }
 
-			$isNewSearch = false;
-		} else {
-			$record = new SearchRecord;
-			$isNewSearch = false;
-		}
+        if ($model->id) {
+            $record = SearchRecord::findOne($model->id);
 
-		$record->setAttributes($model->getAttributes());
+            if (!$record) {
+                throw new InvalidSearchException("No search exists with the ID '{$model->id}'");
+            }
+        } else {
+            $record = new SearchRecord;
+        }
 
-		$transaction = Craft::$app->getDb()->beginTransaction();
+        $record->siteId = $model->siteId;
+        $record->params = $model->params;
+        $record->type   = $model->type;
+        $record->save(false);
 
-		try {
-			$record->save();
+        if(!$model->id) {
+            $model->id = $record->id;
+        }
 
-			if($isNewSearch) {
-				$model->id = $record->id;
-			}
+        return true;
+    }
 
-			$transaction->commit();
-		} catch (Exception $e) {
-			$transaction->rollBack();
+    /**
+     * Find a search by id
+     *
+     * @param  $id integer
+     * @return Search|null
+     */
+    public function getById($id = 0)
+    {
+        $record = SearchRecord::findOne($id);
 
-			throw $e;
-		}
+        if ($record) {
+            return new Search($record->toArray());
+        }
 
-		return true;
+        return null;
+    }
 
-	}
+    /**
+     * Delete a search by id
+     *
+     * @param  $id integer
+     * @return bool
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     */
+    public function deleteById($id = 0): bool
+    {
+        $record = SearchRecord::findOne($id);
 
-	/**
-	 * Find a search by id
-	 * 
-	 * @param  $id integer
-	 * @return Search|null
-	 */
-	public function getById($id = 0)
-	{
-		$record = SearchRecord::findOne($id);
+        if (!$record) {
+            return true;
+        }
 
-		if($record) {
-			return new Search($record->toArray());
-		}
+        $record->delete();
 
-		return null;
-	}
-
-	/**
-	 * Delete a search by id
-	 * 
-	 * @param  $id integer
-	 * @return bool
-	 */
-	public function deleteById($id = 0): bool
-	{
-		$record = SearchRecord::findOne($id);
-
-		if(!$record) {
-			return true;
-		}
-
-		$record->delete();
-
-		return true;
-	}
+        return true;
+    }
 }

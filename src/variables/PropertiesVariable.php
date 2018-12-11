@@ -1,200 +1,172 @@
 <?php
 
-namespace anecka\retsrabbit\variables;
+namespace apc\retsrabbit\variables;
 
-use anecka\retsrabbit\RetsRabbit;
-use anecka\retsRabbit\serializers\RetsRabbitArraySerializer;
-use anecka\retsRabbit\transformers\PropertyTransformer;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Item;
-use League\Fractal\Resource\Collection;
+use apc\retsrabbit\models\Search;
+use apc\retsrabbit\RetsRabbit;
+use apc\retsrabbit\viewmodels\MultipleListingsViewModel;
+use apc\retsrabbit\viewmodels\SingleListingViewModel;
+use apc\retsrabbit\viewmodels\ViewModel;
+use Craft;
 
 class PropertiesVariable
 {
-	/**
-	 * @var Manager
-	 */
-	private $fractal;
+    /**
+     * Cache duration in seconds
+     *
+     * @var integer
+     */
+    private $cacheDuration = 3600;
 
-	/**
-	 * Cache duration in seconds
-	 * 
-	 * @var integer
-	 */
-	private $cacheDuration = 3600;
+    /**
+     * Find a property listing by its MSL id.
+     *
+     * @param  $id string
+     * @param array $resoParams
+     * @param bool $useCache
+     * @param null $cacheDuration
+     * @return \apc\retsrabbit\viewmodels\ViewModel
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function find($id = '', $resoParams = [], $useCache = false, $cacheDuration = null): ViewModel
+    {
+        $resoParams = $resoParams ?? [];
+        $cacheKey   = md5($id . serialize($resoParams));
+        $cacheKey   = 'properties/' . hash('sha256', $cacheKey);
 
-	/**
-	 * RetsRabbit_PropertiesVariable Constructor
-	 */
-	public function __construct()
-	{
-		$this->fractal = new Manager();
-		$this->fractal->setSerializer(new RetsRabbitArraySerializer);
-	}
+        if ($useCache) {
+            /** @var \apc\retsrabbit\viewmodels\ViewModel $viewModel */
+            $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
-	/**
-	 * Find a property listing by its MSL id.
-	 * 
-	 * @param  $id string
-	 * @return array
-	 */
-	public function find($id = '', $resoParams = [], $useCache = false, $cacheDuration = null)
-	{
-		$cacheKey = md5($id . serialize($resoParams));
-		$cacheKey = 'properties/' . hash('sha256', $cacheKey);
-		$data = [];
-		$error = false;
+            if ($viewModel !== false) {
+                return $viewModel;
+            }
+        }
 
-		//See if fetching from cache
-		if($useCache) {
-			$data = RetsRabbit::$plugin->cache->get($cacheKey);
-		}
+        $viewModel = new SingleListingViewModel();
 
-		//Check if any result pulled from cache
-		if(is_null($data) || empty($data)) {
-			$res = RetsRabbit::$plugin->properties->find($id, $resoParams);
+        $res = RetsRabbit::$plugin->getProperties()->find($id, $resoParams);
 
-			if(!$res->didSucceed()) {
-				$error = true;
-			} else {
-				$data = $res->getResponse();
+        if (!$res->wasSuccessful()) {
+            $viewModel->error = $res->error();
+        } else {
+            $viewModel->decorateResource($res->listing());
 
-				if($useCache) {
-					$ttl = $cacheDuration ?: $this->cacheDuration;
+            if ($useCache) {
+                $ttl = $cacheDuration ?: $this->cacheDuration;
 
-					RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
-				}
-			}
-		}
+                RetsRabbit::$plugin->getCache()->set($cacheKey, $viewModel, $ttl);
+            }
+        }
 
-		$viewData = null;
+        return $viewModel;
+    }
 
-		if(!$error) {
-			if(empty($data)) {
-				$viewData = [];
-			} else {
-				$resources = new Item($data, new PropertyTransformer);
-        		$viewData = $this->fractal->createData($resources)->toArray();
-			}
-		}
+    /**
+     * Perform a query against the Rets Rabbit API.
+     *
+     * @param  $params array
+     * @param  $useCache bool
+     * @param  $cacheDuration mixed
+     * @return \apc\retsrabbit\viewmodels\ViewModel
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function query($params = [], $useCache = false, $cacheDuration = null): ViewModel
+    {
+        $params   = $params ?? [];
+        $cacheKey = 'searches/' . hash('sha256', serialize($params));
 
-		return $viewData;
-	}
+        if ($useCache) {
+            /** @var MultipleListingsViewModel $viewModel */
+            $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
-	/**
-	 * Perform a query against the Rets Rabbit API.
-	 * 
-	 * @param  $params array
-	 * @param  $useCache bool
-	 * @param  $cacheDuration mixed
-	 * @return array
-	 */
-	public function query($params = [], $useCache = false, $cacheDuration = null)
-	{
-		$cacheKey = 'searches/' . hash('sha256', serialize($params));
-		$data = [];
-		$error = false;
+            if ($viewModel !== false) {
+                return $viewModel;
+            }
+        }
 
-		//See if fetching from cache
-		if($useCache) {
-			$data = RetsRabbit::$plugin->cache->get($cacheKey);
-		}
+        $viewModel = new MultipleListingsViewModel();
+        $res       = RetsRabbit::$plugin->getProperties()->search($params);
 
-		//Check if any result pulled from cache
-		if(is_null($data) || empty($data)) {
-			$res = RetsRabbit::$plugin->properties->search($params);
+        if (!$res->wasSuccessful()) {
+            $viewModel->error = $res->error();
+        } else {
+            $viewModel->decorateResource($res->listings());
 
-			if(!$res->didSucceed()) {
-				$error = true;
-			} else {
-				$data = $res->getResponse()['value'];
+            if ($useCache) {
+                $ttl = $cacheDuration ?: $this->cacheDuration;
 
-				if($useCache) {
-					$ttl = $cacheDuration ?: $this->cacheDuration;
+                RetsRabbit::$plugin->getCache()->set($cacheKey, $viewModel, $ttl);
+            }
+        }
 
-					RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
-				}
-			}
-		}
+        return $viewModel;
+    }
 
-		$viewData = null;
+    /**
+     * Grab a saved search and run that search against the Rets Rabbit API
+     *
+     * @param  string $id
+     * @param array $overrides
+     * @param  bool $useCache
+     * @param  mixed $cacheDuration
+     * @return MultipleListingsViewModel
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function search(
+        $id = '', $overrides = [], $useCache = false, $cacheDuration = null
+    ): ViewModel {
+        /** @var Search $search */
+        $search = RetsRabbit::$plugin->getSearches()->getById($id);
 
-		if(!$error) {
-			if(empty($data)) {
-				$viewData = [];
-			} else {
-				$resources = new Collection($data, new PropertyTransformer);
-        		$viewData = $this->fractal->createData($resources)->toArray();
-			}
-		}
+        if (!$search) {
+            return new MultipleListingsViewModel();
+        }
 
-		return $viewData;
-	}
+        $currentPage   = Craft::$app->request->getPageNum();
+        $mergeableKeys = ['$select', '$orderby', '$top'];
+        $params        = $search->params ?? [];
+        $params        = json_decode($params, true);
 
-	/**
-	 * Grab a saved search and run that search against the Rets Rabbit API
-	 * 
-	 * @param  string $id
-	 * @param  bool $useCache
-	 * @param  mixed $cacheDuration
-	 * @return array
-	 */
-	public function search($id = '', $overrides = [], $useCache = false, $cacheDuration = null)
-	{
-		$search = craft()->retsRabbit_searches->getById($id);
+        foreach ($mergeableKeys as $key) {
+            if (isset($overrides[$key])) {
+                $params[$key] = $overrides[$key];
+            }
+        }
 
-		if($search) {
-			$currentPage = craft()->request->getPageNum();
-			$mergeableKeys = array('$select', '$orderby', '$top');
-			$params = $search->getAttribute('params');
-			$params = json_decode($params, true);
-			foreach($mergeableKeys as $key) {
-				if(isset($overrides[$key])) {
-					$params[$key] = $overrides[$key];
-				}
-			}
-			if($currentPage > 1) {
-				$params['$skip'] = ($currentPage - 1) * $params['$top'];
-			}
-			$cacheKey = 'searches/' . hash('sha256', serialize($params));
-			$data = [];
-			$error = false;
+        if ($currentPage > 1) {
+            $params['$skip'] = ($currentPage - 1) * $params['$top'];
+        }
 
-			//See if fetching from cache
-			if($useCache) {
-				$data = RetsRabbit::$plugin->cache->get($cacheKey);
-			}
+        $cacheKey = 'searches/' . hash('sha256', serialize($params));
 
-			if(is_null($data) || empty($data)) {
-				$res = RetsRabbit::$plugin->properties->search($params);
+        if ($useCache) {
+            /** @var MultipleListingsViewModel $viewModel */
+            $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
-				if(!$res->didSucceed()) {
-					$error = true;
-				} else {
-					$data = $res->getResponse()['value'];
+            if ($viewModel !== false) {
+                return $viewModel;
+            }
+        }
 
-					if($useCache) {
-						$ttl = $cacheDuration ?: $this->cacheDuration;
+        $res       = RetsRabbit::$plugin->getProperties()->search($params);
+        $viewModel = new MultipleListingsViewModel();
 
-						RetsRabbit::$plugin->cache->set($cacheKey, $data, $ttl);
-					}
-				}
-			}
+        if (!$res->wasSuccessful()) {
+            $viewModel->error = $res->error();
+        } else {
+            $viewModel->decorateResource($res->listings());
 
-			$viewData = null;
+            if ($useCache) {
+                $ttl = $cacheDuration ?: $this->cacheDuration;
 
-			if(!$error) {
-				if(empty($data)) {
-					$viewData = [];
-				} else {
-					$resources = new Collection($data, new PropertyTransformer);
-	        		$viewData = $this->fractal->createData($resources)->toArray();
-				}
-			}
+                RetsRabbit::$plugin->getCache()->set($cacheKey, $viewModel, $ttl);
+            }
+        }
 
-			return $viewData;
-		} else {
-			return null;
-		}
-	}
+        return $viewModel;
+    }
 }

@@ -8,11 +8,11 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit\controllers;
+namespace apc\retsrabbit\controllers;
 
 use Craft;
 
-use anecka\retsrabbit\RetsRabbit;
+use apc\retsrabbit\RetsRabbit;
 use craft\web\Controller;
 
 /**
@@ -20,44 +20,50 @@ use craft\web\Controller;
  *
  * https://craftcms.com/docs/plugins/controllers
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */
 class PropertiesController extends Controller
 {
-	/**
-	 * Allow these endpoints to be hit by anonymous users
-	 * @var array
-	 */
-	protected $allowAnonymous = ['search'];
+    /**
+     * Allow these endpoints to be hit by anonymous users
+     *
+     * @var array
+     */
+    protected $allowAnonymous = ['search'];
 
-	/**
-	 * Handle a POST search by saving params into the DB and redirecting
-	 * to the search results page.
-	 * 
-	 * @return mixed
-	 */
-	public function actionSearch()
-	{
-		$this->requirePostRequest();
+    /**
+     * Handle a POST search by saving params into the DB and redirecting
+     * to the search results page.
+     *
+     * @return mixed
+     * @throws \apc\retsrabbit\exceptions\InvalidSearchException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\db\Exception
+     * @throws \yii\web\BadRequestHttpException
+     */
+    public function actionSearch()
+    {
+        $this->requirePostRequest();
 
-		$data = Craft::$app->getRequest();
-		$resoParams = RetsRabbit::$plugin->forms->toReso($data);
-		$search = RetsRabbit::$plugin->newPropertySearch(array(
-			'params' => $resoParams
-		));
+        $data       = Craft::$app->getRequest()->getBodyParams();
+        $resoParams = RetsRabbit::$plugin->getForms()->toReso($data);
+        $search     = RetsRabbit::$plugin->getSearches()->newPropertySearch([
+            'params' => $resoParams
+        ]);
 
-		if(RetsRabbit::$plugin->saveSearch($search)) {
-			Craft::$app->user->setNotice(Craft::t('rets-rabbit', 'Search saved'));
+        if (RetsRabbit::$plugin->getSearches()->saveSearch($search)) {
+            Craft::$app->session->setNotice(Craft::t('rets-rabbit', 'Search saved'));
 
-			return $this->redirectToPostedUrl(array('searchId' => $search->id));
-		} else {
-			Craft::$app->user->setError(Craft::t('rets-rabbit', "Couldn't save search."));
+            return $this->redirectToPostedUrl(['searchId' => $search->id]);
+        }
 
-			Craft::$app->urlManager->setRouteVariables(array(
-				'search' => $search
-			));
-		}
-	}
+        Craft::$app->session->setError(Craft::t('rets-rabbit', "Couldn't save search."));
+        Craft::$app->urlManager->setRouteParams([
+            'search' => $search
+        ]);
+
+        return $this->redirectToPostedUrl();
+    }
 }

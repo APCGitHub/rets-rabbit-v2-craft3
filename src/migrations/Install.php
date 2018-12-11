@@ -8,12 +8,10 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit\migrations;
+namespace apc\retsrabbit\migrations;
 
 use Craft;
 
-use anecka\retsrabbit\RetsRabbit;
-use craft\config\DbConfig;
 use craft\db\Migration;
 
 /**
@@ -26,22 +24,16 @@ use craft\db\Migration;
  * If you need to perform any additional actions on install/uninstall, override the
  * safeUp() and safeDown() methods.
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */
 class Install extends Migration
 {
-    // Public Properties
-    // =========================================================================
-
     /**
      * @var string The database driver to use
      */
     public $driver;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * This method contains the logic to be executed when applying this migration.
@@ -53,7 +45,7 @@ class Install extends Migration
      * @return boolean return a false value to indicate the migration fails
      * and should not proceed further. All other return values mean the migration succeeds.
      */
-    public function safeUp()
+    public function safeUp(): bool
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
 
@@ -78,7 +70,7 @@ class Install extends Migration
      * @return boolean return a false value to indicate the migration fails
      * and should not proceed further. All other return values mean the migration succeeds.
      */
-    public function safeDown()
+    public function safeDown(): bool
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
         $this->removeTables();
@@ -94,24 +86,24 @@ class Install extends Migration
      *
      * @return bool
      */
-    protected function createTables()
+    protected function createTables(): bool
     {
         $tablesCreated = false;
-        $tableSchema = Craft::$app->db->schema->getTableSchema('{{%rets_rabbit_searches}}');
+        $tableSchema   = Craft::$app->db->schema->getTableSchema('{{%rets_rabbit_searches}}');
 
         if ($tableSchema === null) {
             $tablesCreated = true;
-            
+
             $this->createTable(
                 '{{%rets_rabbit_searches}}',
                 [
-                    'id'            => $this->primaryKey(),
-                    'type'          => $this->string(32)->notNull()->defaultValue('property'),
-                    'params'        => $this->text(),
-                    'siteId'        => $this->integer()->notNull(),
-                    'dateCreated'   => $this->dateTime()->notNull(),
-                    'dateUpdated'   => $this->dateTime()->notNull(),
-                    'uid'           => $this->uid(),
+                    'id'          => $this->primaryKey(),
+                    'type'        => $this->string(32)->notNull()->defaultValue('property'),
+                    'params'      => $this->text(),
+                    'siteId'      => $this->integer()->notNull(),
+                    'dateCreated' => $this->dateTime()->notNull(),
+                    'dateUpdated' => $this->dateTime()->notNull(),
+                    'uid'         => $this->uid(),
                 ]
             );
         }
@@ -154,7 +146,7 @@ class Install extends Migration
      */
     protected function removeTables()
     {
-    // retsrabbit_retsrabbitrecord table
+        // retsrabbit_retsrabbitrecord table
         $this->dropTableIfExists('{{%rets_rabbit_searches}}');
     }
 }

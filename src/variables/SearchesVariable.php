@@ -1,9 +1,9 @@
 <?php
 
-namespace anecka\retsrabbit\variables;
+namespace apc\retsrabbit\variables;
 
-use anecka\retsrabbit\models\SearchCriteriaModel;
-use anecka\retsrabbit\RetsRabbit;
+use apc\retsrabbit\models\SearchCriteriaModel;
+use apc\retsrabbit\RetsRabbit;
 
 class SearchesVariable
 {
@@ -13,18 +13,18 @@ class SearchesVariable
 	 * @param  integer $id
 	 * @return bool
 	 */
-	public function exists($id = 0)
+	public function exists($id = 0): bool
 	{
-		$search = RetsRabbit::$plugin->searches->getById($id);
+		$search = RetsRabbit::$plugin->getSearches()->getById($id);
 
-		return !is_null($search);
+		return $search !== null;
 	}
 
 	/**
 	 * Get a search SearchCriteriaModel
 	 * @return SearchCriteriaModel
 	 */
-	public function criteria()
+	public function criteria(): SearchCriteriaModel
 	{
 		return new SearchCriteriaModel;
 	}

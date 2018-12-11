@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit\variables;
+namespace apc\retsrabbit\variables;
 
 
 /**
@@ -20,7 +20,7 @@ namespace anecka\retsrabbit\variables;
  *
  * https://craftcms.com/docs/plugins/variables
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */
@@ -35,8 +35,8 @@ class RetsRabbitVariable
      */
     public function __call($name, $arguments)
     {
-        $className = "anecka\\retsrabbit\\services\\" . ucfirst($name) . "Variable";
+        $className = "apc\\retsrabbit\\variables\\" . ucfirst($name) . 'Variable';
 
-        return (class_exists($className)) ? new $className() : null;
+        return class_exists($className) ? new $className() : null;
     }
 }

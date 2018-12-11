@@ -1,8 +1,8 @@
-<?php
+<?php /** @noinspection ALL */
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
-use Anecka\RetsRabbit\Core\Query\QueryParser;
+use Apc\RetsRabbit\Core\Query\QueryParser;
 use Craft;
 
 use craft\base\Component;
@@ -15,13 +15,12 @@ class FormsService extends Component
 	 * @param  $params array
 	 * @return array
 	 */
-	public function toReso($params = array())
+	public function toReso($params = [])
 	{
 		$reso = (new QueryParser)->format($params);
-		$reso = array_filter($reso, function ($value) {
-			return !empty($value);
-		});
 
-		return $reso;
+		return array_filter($reso, function ($value) {
+            return !empty($value);
+        });
 	}
 }

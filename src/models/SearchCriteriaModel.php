@@ -1,6 +1,6 @@
 <?php
 
-namespace anecka\retsrabbit\models;
+namespace apc\retsrabbit\models;
 
 use craft\base\Model;
 
@@ -35,8 +35,8 @@ class SearchCriteriaModel extends Model
 	 * @param  integer $searchId
 	 * @return $this
 	 */
-	public function forId($searchId = 0)
-	{
+	public function forId($searchId = 0): self
+    {
 		$this->searchId = $searchId;
 
 		return $this;
@@ -46,7 +46,7 @@ class SearchCriteriaModel extends Model
 	 * @param  array $selects
 	 * @return $this
 	 */
-	public function select($selects = array())
+	public function select($selects = array()): self
 	{
 		$s = is_array($selects) ? $selects : func_get_args();
 		$s = implode(', ', $s);
@@ -60,7 +60,7 @@ class SearchCriteriaModel extends Model
 	 * @param  string $filter
 	 * @return $this
 	 */
-	public function filter($filter = '')
+	public function filter($filter = ''): self
 	{
 		$this->params['$filter'] = $filter;
 
@@ -71,10 +71,11 @@ class SearchCriteriaModel extends Model
 	 * @param  integer $limit
 	 * @return $this
 	 */
-	public function limit($limit = 0)
+	public function limit($limit = 0): self
 	{
-		if($limit > 0)
-			$this->limit = $limit;
+		if($limit > 0) {
+            $this->limit = $limit;
+        }
 
 		return $this;
 	}
@@ -83,10 +84,11 @@ class SearchCriteriaModel extends Model
 	 * @param  integer $skip
 	 * @return $this
 	 */
-	public function skip($skip = 0)
+	public function skip($skip = 0): self
 	{
-		if($skip > 0)
-			$this->params['$skip'] = $skip;
+		if($skip > 0) {
+            $this->params['$skip'] = $skip;
+        }
 
 		return $this;
 	}
@@ -96,7 +98,7 @@ class SearchCriteriaModel extends Model
 	 * @param  string $dir
 	 * @return $this
 	 */
-	public function orderBy($field, $dir = 'asc')
+	public function orderBy($field, $dir = 'asc'): self
 	{
 		if($dir != 'desc') {
 			$dir = 'asc';
@@ -111,7 +113,7 @@ class SearchCriteriaModel extends Model
 	 * @param  string $method
 	 * @return $this
 	 */
-	public function countBy($method)
+	public function countBy($method): self
 	{
 		if($method == 'exact') {
 			$this->countMethod = 'total_results';
@@ -123,10 +125,10 @@ class SearchCriteriaModel extends Model
 	/**
 	 * @return array
 	 */
-	public function get()
+	public function get(): array
 	{
 		return array_filter($this->params, function ($val) {
-			return !is_null($val);
+			return $val !== null;
 		});
 	}
 
@@ -139,7 +141,7 @@ class SearchCriteriaModel extends Model
 	}
 
 	/**
-	 * @return int
+	 * @return mixed
 	 */
 	public function getSearchId()
 	{

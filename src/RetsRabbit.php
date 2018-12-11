@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection ALL */
+
 /**
  * Rets Rabbit plugin for Craft CMS 3.x
  *
@@ -8,11 +9,15 @@
  * @copyright Copyright (c) 2017 Anecka, LLC
  */
 
-namespace anecka\retsrabbit;
+namespace apc\retsrabbit;
 
-use anecka\retsrabbit\models\Settings;
-use anecka\retsrabbit\variables\RetsRabbitVariable;
-use anecka\retsrabbit\twigextensions\RetsRabbitTwigExtension;
+use Apc\RetsRabbit\Core\ApiConfig;
+use Apc\RetsRabbit\Core\Responses\MultipleListingResponse;
+use Apc\RetsRabbit\Core\RetsRabbitApi;
+use apc\retsrabbit\models\Settings;
+use apc\retsrabbit\traits\PluginTrait;
+use apc\retsrabbit\variables\RetsRabbitVariable;
+use apc\retsrabbit\twigextensions\RetsRabbitTwigExtension;
 
 use Craft;
 use craft\base\Plugin;
@@ -22,18 +27,18 @@ use craft\web\twig\variables\CraftVariable;
 use craft\events\RegisterUrlRulesEvent;
 
 use yii\base\Event;
+use yii\di\Container;
 
 /**
  * https://craftcms.com/docs/plugins/introduction
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */
 class RetsRabbit extends Plugin
 {
-    // Static Properties
-    // =========================================================================
+    use PluginTrait;
 
     /**
      * Static property that is an instance of this plugin class so that it can be accessed via
@@ -42,15 +47,6 @@ class RetsRabbit extends Plugin
      * @var RetsRabbit
      */
     public static $plugin;
-
-    /**
-     * Has a control panel
-     * @var boolean
-     */
-    public $hasCpSettings = true;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * Set our $plugin static property to this class so that it can be accessed via
@@ -68,25 +64,29 @@ class RetsRabbit extends Plugin
         parent::init();
         self::$plugin = $this;
 
+        \Yii::$container->setSingleton('retsRabbitApi', function($container, $params, $config) {
+            $settings = $this->getSettings();
+            $config   = new ApiConfig($settings->apiEndpoint);
+            $api      = new RetsRabbitApi($config);
+
+            return $api;
+        });
+
         // Add in our Twig extensions
-        Craft::$app->view->twig->addExtension(new RetsRabbitTwigExtension());
+        Craft::$app->view->registerTwigExtension(new RetsRabbitTwigExtension());
 
         // Register our variables
-        Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
-            function (Event $event) {
-                /** @var CraftVariable $variable */
-                $variable = $event->sender;
-                $variable->set('retsRabbit', RetsRabbitVariable::class);
-            }
-        );
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+            /** @var CraftVariable $variable */
+            $variable = $event->sender;
+            $variable->set('retsRabbit', RetsRabbitVariable::class);
+        });
 
         // Do something after we're installed
         Event::on(
             Plugins::class,
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function (PluginEvent $event) {
+            function(PluginEvent $event) {
                 if ($event->plugin === $this) {
                     // We were just installed
                 }
@@ -97,11 +97,12 @@ class RetsRabbit extends Plugin
          * Set Plugin Components
          */
         $this->setComponents([
-            "cache"      => \anecka\retsrabbit\services\CacheService::class,
-            "forms"      => \anecka\retsrabbit\services\FormsService::class,
-            "properties" => \anecka\retsrabbit\services\PropertiesService::class,
-            "searches"   => \anecka\retsrabbit\services\SearchesService::class,
-            "tokens"     => \anecka\retsrabbit\services\TokensService::class,
+            'apiResponses' => \apc\retsrabbit\services\ApiResponseService::class,
+            'cache'        => \apc\retsrabbit\services\CacheService::class,
+            'forms'        => \apc\retsrabbit\services\FormsService::class,
+            'properties'   => \apc\retsrabbit\services\PropertiesService::class,
+            'searches'     => \apc\retsrabbit\services\SearchesService::class,
+            'tokens'       => \apc\retsrabbit\services\TokensService::class,
         ]);
 
         /**
@@ -134,7 +135,7 @@ class RetsRabbit extends Plugin
 
     /**
      * Create the settings model
-     * 
+     *
      * @return Settings
      */
     protected function createSettingsModel()
@@ -142,21 +143,30 @@ class RetsRabbit extends Plugin
         return new Settings();
     }
 
-    // Protected Methods
-    // =========================================================================
+    /**
+     * @return null|string
+     * @throws \Twig_Error_Loader
+     * @throws \yii\base\Exception
+     */
     protected function settingsHtml(): string
     {
-        $valid = RetsRabbit::$plugin->tokens->isValid();
-		$canHitApi = RetsRabbit::$plugin->properties->search([
-			'$top' => 1
-        ]);
-        
-        return Craft::$app->view->renderTemplate(
-            'rets-rabbit/settings', 
+        $valid = RetsRabbit::getInstance()->getTokens()->isValid();
+
+        try {
+            /** @var MultipleListingResponse $canHitApi */
+            $canHitApi = RetsRabbit::getInstance()->getProperties()->search([
+                '$top' => 1
+            ])->wasSuccessful();
+        } catch (\Exception $e) {
+            $canHitApi = false;
+        }
+
+        return Craft::$app->getView()->renderTemplate(
+            'rets-rabbit/settings',
             [
-                'canHitApi'     => $canHitApi,
-                'settings'      => $this->getSettings(),
-                'tokenExists'   => $valid,
+                'canHitApi'   => $canHitApi,
+                'settings'    => $this->getSettings(),
+                'tokenExists' => $valid,
             ]
         );
     }

@@ -1,18 +1,6 @@
 <?php
-/**
- * Rets Rabbit plugin for Craft CMS 3.x
- *
- * Display real estate listings in your craft site in a simple and intuitive way.
- *
- * @link      http://anecka.com
- * @copyright Copyright (c) 2017 Anecka, LLC
- */
 
-namespace anecka\retsrabbit\twigextensions;
-
-use anecka\retsrabbit\RetsRabbit;
-
-use Craft;
+namespace apc\retsrabbit\twigextensions;
 
 /**
  * Twig can be extended in many ways; you can add extra tags, filters, tests, operators,
@@ -21,64 +9,16 @@ use Craft;
  *
  * http://twig.sensiolabs.org/doc/advanced.html
  *
- * @author    Anecka, LLC
+ * @author APC, LLC
  * @package   RetsRabbit
  * @since     1.0.0
  */
 class RetsRabbitTwigExtension extends \Twig_Extension
 {
-    // Public Methods
-    // =========================================================================
-
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
-    public function getName()
-    {
-        return 'RetsRabbit';
-    }
-
-    /**
-     * Returns an array of Twig filters, used in Twig templates via:
-     *
-     *      {{ 'something' | someFilter }}
-     *
-     * @return array
-     */
-    public function getFilters()
+    public function getTokenParsers(): array
     {
         return [
-            new \Twig_SimpleFilter('someFilter', [$this, 'someInternalFunction']),
+            new RetsRabbitPaginateTokenParser()
         ];
-    }
-
-    /**
-     * Returns an array of Twig functions, used in Twig templates via:
-     *
-     *      {% set this = someFunction('something') %}
-     *
-    * @return array
-     */
-    public function getFunctions()
-    {
-        return [
-            new \Twig_SimpleFunction('someFilter', [$this, 'someInternalFunction']),
-        ];
-    }
-
-    /**
-     * Our function called via Twig; it can do anything you want
-     *
-     * @param null $text
-     *
-     * @return string
-     */
-    public function someInternalFunction($text = null)
-    {
-        $result = $text . " in the way";
-
-        return $result;
     }
 }

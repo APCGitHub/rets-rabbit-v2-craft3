@@ -1,83 +1,68 @@
 <?php
 
-namespace anecka\retsrabbit\services;
+namespace apc\retsrabbit\services;
 
-use Anecka\RetsRabbit\Core\ApiService;
-use Anecka\RetsRabbit\Core\Bridges\CraftBridge;
-use anecka\retsrabbit\RetsRabbit;
+use Apc\RetsRabbit\Core\RetsRabbitApi;
+use apc\retsrabbit\RetsRabbit;
 
 use Craft;
 use craft\base\Component;
+use Yii;
 
 
 class TokensService extends Component
 {
-	/**
-	 * @var ApiService
-	 */
-	private $api;
+    /**
+     * @var RetsRabbitApi
+     */
+    private $api;
 
-	/** 
-	 * @var mixed
-	 */
-	private $settings;
+    /**
+     * Constructor
+     *
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\di\NotInstantiableException
+     */
+    public function __construct()
+    {
+        $this->api = Yii::$container->get('retsRabbitApi');
+    }
 
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$bridge = new CraftBridge;
-		$this->api = new ApiService($bridge);
-		$this->settings = RetsRabbit::$plugin->getSettings();
+    /**
+     * Try to fetch a new access token from the RR API.
+     *
+     * @return mixed|null
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function refresh()
+    {
+        $token = null;
+        $res   = $this->api->accessToken()->create([
+            'grant_type'    => 'client_credentials',
+            'client_id'     => RetsRabbit::$plugin->getSettings()->clientId,
+            'client_secret' => RetsRabbit::$plugin->getSettings()->clientSecret
+        ]);
 
-		//Allow developer to override base endpoint
-		if($this->settings->apiEndpoint) {
-			$this->api->overrideBaseApiEndpoint($settings->apiEndpoint);
-		}
-	}
-
-	/**
-	 * Try to fetch a new access token from the RR API.
-	 * 
-	 * @return mixed|null
-	 */
-	public function refresh()
-	{
-		$token = null;
-
-		try {
-			$res = $this->api->getAccessToken([
-	      		'client_id' => $this->settings->clientId,
-	      		'client_secret' => $this->settings->clientSecret
-	    	]);
-
-	        if($res->didSucceed()) {
-	            $content = $res->getResponse();
-	            $token = $content['access_token'];
-	            $ttl = $content['expires_in'];
-
-	            RetsRabbit::$plugin->cache->set('access_token', $token, $ttl, true);
-	        } else {
-	        	Craft::warning('Could not fetch the access token.', __METHOD__);
-	        }
-		} catch (\Exception $e) {
-			Craft::error($e->getMessage(), __METHOD__);
-		}
+        if ($res->wasSuccessful()) {
+            $token = $res->token();
+            RetsRabbit::$plugin->getCache()->set('access_token', $token->access_token, $token->expires_in);
+        } else {
+            Craft::warning('Could not fetch the access token.', __METHOD__);
+        }
 
         return $token;
-	}
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public function isValid()
-	{
-		$token = RetsRabbit::$plugin->cache->get('access_token', true);
+    /**
+     * @return boolean
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function isValid(): bool
+    {
+        $token = RetsRabbit::$plugin->getCache()->get('access_token');
 
-        if(is_null($token) || empty($token))
-            return false;
-
-        return true;
-	}
+        return !($token === null || empty($token));
+    }
 }
