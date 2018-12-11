@@ -41,14 +41,5 @@
         "changelogUrl": "https://github.com/APCGitHub/rets-rabbit-v2-craft3/blob/master/CHANGELOG.md",
         "class": "apc\\retsrabbit\\RetsRabbit",
         "developer": "Andrew Clinton"
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "/home/vagrant/plugins/rets-rabbit-plugin-core/",
-            "options": {
-                "symlink": true
-            }
-        }
-    ]
+    }
 }
