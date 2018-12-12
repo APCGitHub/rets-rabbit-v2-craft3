@@ -2,7 +2,6 @@
     "name": "apcdatanalytics/rets-rabbit",
     "description": "Display real estate listings in your craft site in a simple and intuitive way.",
     "type": "craft-plugin",
-    "version": "2.0.1",
     "keywords": [
         "craft",
         "cms",
@@ -35,7 +34,6 @@
         "name": "Rets Rabbit",
         "description": "Display real estate listings in your craft site in a simple and intuitive way.",
         "handle": "rets-rabbit",
-        "schemaVersion": "2.0.1",
         "hasCpSettings": true,
         "hasCpSection": false,
         "changelogUrl": "https://github.com/APCGitHub/rets-rabbit-v2-craft3/blob/master/CHANGELOG.md",
