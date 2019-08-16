@@ -64,7 +64,7 @@ class RetsRabbit extends Plugin
         parent::init();
         self::$plugin = $this;
 
-        \Yii::$container->setSingleton('retsRabbitApi', function($container, $params, $config) {
+        \Yii::$container->setSingleton('retsRabbitApi', function ($container, $params, $config) {
             $settings = $this->getSettings();
             $config   = new ApiConfig($settings->apiEndpoint);
             $api      = new RetsRabbitApi($config);
@@ -76,7 +76,7 @@ class RetsRabbit extends Plugin
         Craft::$app->view->registerTwigExtension(new RetsRabbitTwigExtension());
 
         // Register our variables
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
             /** @var CraftVariable $variable */
             $variable = $event->sender;
             $variable->set('retsRabbit', RetsRabbitVariable::class);
@@ -86,7 +86,7 @@ class RetsRabbit extends Plugin
         Event::on(
             Plugins::class,
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function(PluginEvent $event) {
+            function (PluginEvent $event) {
                 if ($event->plugin === $this) {
                     // We were just installed
                 }
@@ -101,6 +101,7 @@ class RetsRabbit extends Plugin
             'cache'        => \apc\retsrabbit\services\CacheService::class,
             'forms'        => \apc\retsrabbit\services\FormsService::class,
             'properties'   => \apc\retsrabbit\services\PropertiesService::class,
+            'openHouses'   => \apc\retsrabbit\services\OpenHousesService::class,
             'searches'     => \apc\retsrabbit\services\SearchesService::class,
             'tokens'       => \apc\retsrabbit\services\TokensService::class,
         ]);
