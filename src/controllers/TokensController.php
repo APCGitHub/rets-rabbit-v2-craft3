@@ -7,13 +7,18 @@ use Craft;
 
 use apc\retsrabbit\RetsRabbit;
 use craft\web\Controller;
+use yii\web\BadRequestHttpException;
+use yii\web\Response;
 
 class TokensController extends Controller
 {
     /**
-     * @throws \yii\web\BadRequestHttpException
+     * @return Response
+     * @throws BadRequestHttpException
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
-    public function actionSearch(): \yii\web\Response
+    public function actionSearch(): Response
     {
         $this->requirePostRequest();
 
