@@ -24,7 +24,7 @@
     "require": {
         "craftcms/cms": "^3.0.0",
         "ext-json": "*",
-        "rets-rabbit/cms-plugin-core": "^2.0"
+        "apcdatanalytics/rets-rabbit-cms-core": "^2.0"
     },
     "autoload": {
         "psr-4": {
