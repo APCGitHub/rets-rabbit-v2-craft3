@@ -25,7 +25,7 @@ class PropertiesVariable
      * @param array $resoParams
      * @param bool $useCache
      * @param null $cacheDuration
-     * @return \apc\retsrabbit\viewmodels\ViewModel
+     * @return ViewModel
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
@@ -36,7 +36,7 @@ class PropertiesVariable
         $cacheKey   = 'properties/' . hash('sha256', $cacheKey);
 
         if ($useCache) {
-            /** @var \apc\retsrabbit\viewmodels\ViewModel $viewModel */
+            /** @var ViewModel $viewModel */
             $viewModel = RetsRabbit::$plugin->getCache()->get($cacheKey);
 
             if ($viewModel !== false) {
@@ -45,8 +45,7 @@ class PropertiesVariable
         }
 
         $viewModel = new SingleListingViewModel();
-
-        $res = RetsRabbit::$plugin->getProperties()->find($id, $resoParams);
+        $res       = RetsRabbit::$plugin->getProperties()->find($id, $resoParams);
 
         if (!$res->wasSuccessful()) {
             $viewModel->error = $res->error();
@@ -69,7 +68,7 @@ class PropertiesVariable
      * @param  $params array
      * @param  $useCache bool
      * @param  $cacheDuration mixed
-     * @return \apc\retsrabbit\viewmodels\ViewModel
+     * @return ViewModel
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
@@ -108,17 +107,18 @@ class PropertiesVariable
     /**
      * Grab a saved search and run that search against the Rets Rabbit API
      *
-     * @param  string $id
+     * @param string $id
      * @param array $overrides
-     * @param  bool $useCache
-     * @param  mixed $cacheDuration
+     * @param bool $useCache
+     * @param mixed $cacheDuration
      * @return MultipleListingsViewModel
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
     public function search(
         $id = '', $overrides = [], $useCache = false, $cacheDuration = null
-    ): ViewModel {
+    ): ViewModel
+    {
         /** @var Search $search */
         $search = RetsRabbit::$plugin->getSearches()->getById($id);
 
