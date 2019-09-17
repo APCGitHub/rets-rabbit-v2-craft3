@@ -123,9 +123,8 @@ At some point your site will need to have a search form where users enter in sea
 
 Your search form must have the following two inputs.
 
-1. `<input type="hidden" name="action" value="retsRabbit/properties/search">
-`
-2. `<input type="hidden" name="redirect" value="search/results/{searchId}">`
+1. `actionInput("rets-rabbit/properties/search)"`
+2. `redirectInput("search/results/{searchId}")`
 
 > **Note:** Your `redirect` input must have the {searchId} term in it so that the controller endpoint which handles the form POST can redirect you to the results page with the saved search's id in the url.
 
