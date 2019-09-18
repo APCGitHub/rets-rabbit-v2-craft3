@@ -4,7 +4,7 @@ This plugin allows you to connect to the Rets Rabbit API(v2) in order to display
 
 ## Installation
 ```$xslt
-composer require apc/rets-rabbit
+composer require apcdatanalytics/rets-rabbit
 ```
 
 ### Requirements

@@ -35,7 +35,6 @@
         "name": "Rets Rabbit",
         "description": "Display real estate listings in your craft site in a simple and intuitive way.",
         "handle": "rets-rabbit",
-        "schemaVersion": "1.0.0",
         "hasCpSettings": true,
         "hasCpSection": false,
         "changelogUrl": "https://github.com/APCGitHub/rets-rabbit-v2-craft3/blob/master/CHANGELOG.md",
