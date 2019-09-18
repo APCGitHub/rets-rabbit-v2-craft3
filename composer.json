@@ -2,6 +2,7 @@
     "name": "apcdatanalytics/rets-rabbit",
     "description": "Display real estate listings in your craft site in a simple and intuitive way.",
     "type": "craft-plugin",
+    "version": "1.1.0",
     "keywords": [
         "craft",
         "cms",

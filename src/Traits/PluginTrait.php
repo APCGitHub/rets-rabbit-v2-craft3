@@ -7,6 +7,7 @@ namespace apc\retsrabbit\traits;
 use apc\retsrabbit\services\ApiResponseService;
 use apc\retsrabbit\services\CacheService;
 use apc\retsrabbit\services\FormsService;
+use apc\retsrabbit\services\OpenHousesService;
 use apc\retsrabbit\services\PropertiesService;
 use apc\retsrabbit\services\SearchesService;
 use apc\retsrabbit\services\TokensService;
@@ -43,6 +44,14 @@ trait PluginTrait
     public function getProperties(): PropertiesService
     {
         return $this->get('properties');
+    }
+
+    /**
+     * @return OpenHousesService
+     */
+    public function getOpenHouses(): OpenHousesService
+    {
+        return $this->get('openHouses');
     }
 
     /**
