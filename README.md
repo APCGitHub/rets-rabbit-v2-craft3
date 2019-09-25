@@ -11,13 +11,80 @@ composer require apcdatanalytics/rets-rabbit
 The Rets Rabbit plugin requires at least php 7.0 in accordance with minimum Craft 3 PHP requirements.
 
 ## Documentation
-You can interact with the Rets Rabbit API through the `PropertiesVariable` which has the following methods.
+You can interact with the Rets Rabbit API through the `PropertiesVariable` & `OpenHousesVariable`.
 
-1. [craft.retsRabbit.properties.find](#findint-id-object-resoparams-bool-usecache--false-int-cacheduration) - Single listing lookup
-2. [craft.retsRabbit.properties.query](#queryobject-resoparams-bool-usecache--false-int-cacheduration) - Run a raw RESO query
-3. [craft.retsRabbit.properties.search](#searchint-id-object-overrides-bool-usecache--false-int-cacheduration) - Perform a search using a saved query from a search form.
+### Open Houses
 
-### find(*int* $id, *object* $resoParams, *bool* $useCache = false, *int* $cacheDuration)
+1. craft.retsRabbit.openHouses.find - Single open house lookup
+2. craft.retsRabbit.openHouses.query - Run a raw RESO query
+
+#### find(*int* $id, *object* $resoParams, *bool* $useCache = false, *int* $cacheDuration)
+
+**$id** - The MLS id of the open house you want to fetch from the API.
+
+**$resoParams** - You may pass valid RESO parameters to help filter the API results for a single open house. This can 
+help speed up the response time if you specifically select the fields you will need from the API by using the `$select` parameter.
+
+**$useCache** - Specify if you want the results cached.
+
+**$cacheDuration** - Specify how long you would like the results cached for in seconds. The default is one hour.
+
+```html
+{% set viewModel = craft.retsRabbit.openHouses.find('123abc', {'$select': 'ListPrice'}, true) %}
+
+{% if viewModel.hasErrors() %}
+    {# An error occurred, let the user know #}
+{% elseif not viewModel.hasData() %}
+    {# No data returned from request #}
+{% else %}
+    {% set open_house = viewModel.data %}
+    {{open_house.ListPrice}}
+{% endif %}
+
+```
+
+#### query(*object* $resoParams, *bool* $useCache = false, *int* $cacheDuration)
+
+**$resoParams** - You may pass valid RESO parameters to help filter the API results for a single open house. This can 
+help speed up the response time if you specifically select the fields you will need from the API by using the `$select` parameter.
+
+**$useCache** - Specify if you want the results cached.
+
+**$cacheDuration** - Specify how long you would like the results cached for in seconds. The default is one hour.
+
+```html
+{% set viewModel = craft.retsRabbit.openHouses.query({
+    '$select': 'ListPrice',
+    '$filter': 'ListPrice ge 150000 and ListPrice le 175000',
+    '$orderby': 'ListPrice',
+    '$top': 12
+}) %}
+
+{% if viewModel.hasErrors() %}
+    {# An error occurred #}
+{% elseif not viewModel.hasData() %}
+    {# No data returned in response #}
+{% else %}
+    {% set open_houses = viewModel.data %}
+    {% for open_house in open_houses %}
+        <div class="card">
+            <div class="card-header">
+                {{open_house.ListingId}}
+            </div>
+            <div class="card-content">
+                {{open_house.ListPrice}}
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+```
+
+### Properties
+1. craft.retsRabbit.properties.find - Single listing lookup
+2. craft.retsRabbit.properties.query - Run a raw RESO query
+3. craft.retsRabbit.properties.search - Perform a search using a saved query from a search form.
+
+#### find(*int* $id, *object* $resoParams, *bool* $useCache = false, *int* $cacheDuration)
 
 **$id** - The MLS id of the property you want to fetch from the API.
 
@@ -41,7 +108,7 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 
 ```
 
-### query(*object* $resoParams, *bool* $useCache = false, *int* $cacheDuration)
+#### query(*object* $resoParams, *bool* $useCache = false, *int* $cacheDuration)
 
 **$resoParams** - You may pass valid RESO parameters to help filter the API results for a single listing. This can help speed up the response time if you specifically select the fields you will need from the API by using the `$select` parameter.
 
@@ -76,7 +143,7 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 {% endif %}
 ```
 
-### search(*int* $id, *object* $overrides, *bool* $useCache = false, *int* $cacheDuration)
+#### search(*int* $id, *object* $overrides, *bool* $useCache = false, *int* $cacheDuration)
 
 **$id** - The id of the saved search parameters usually pulled from a url segment.
 
@@ -115,11 +182,11 @@ You can interact with the Rets Rabbit API through the `PropertiesVariable` which
 
 > **Note:** If you want to paginate your search results you will need to use our special [`rrPaginate` tag](#search-pagination).
 
-### Search Form
+#### Search Form
 
 At some point your site will need to have a search form where users enter in search criteria. We've created a markup DSL for your search HTML which will allow you to create beautiful forms for your users.
 
-#### Required Fields
+##### Required Fields
 
 Your search form must have the following two inputs.
 
@@ -134,13 +201,13 @@ We believe that the following three search types should cover the vast majority 
 2. Single field for multiple values
 3. Multiple fields for a single value
 
-#### Search Form DSL
+##### Search Form DSL
 
 Next, let's dive into creating a search form. In general our markup DSL follows a simple pattern:
 
 `<input name="{fieldName}(operator)" value="">`.
 
-#### Single Field - Single Value
+##### Single Field - Single Value
 
 ```html
 <input name="StateOrProvince(eq)" value="">
@@ -152,7 +219,7 @@ This will create a query clause that looks like the following:
 $filter = StateOrProvince eq {value}
 ```
 
-#### Single Field - Multiple Values
+##### Single Field - Multiple Values
 
 ```html
 {% set exteriorAmenities = ['Backyard', 'Pond', 'Garden'] %}
@@ -174,7 +241,7 @@ This will create a query clause that looks like the following:
 $filter = (contains(ExteriorFeatures, {value1}) or contains(ExteriorFeatures, {value2})))
 ```
 
-#### Multiple Fields - Single Value
+##### Multiple Fields - Single Value
 
 ```html
 <input name="rr:StateOrProvince|City|PostalCode(contains)" class="input" placeholder="City, State, Zip..." type="text">
@@ -188,7 +255,7 @@ $filter = (contains(StateOrProvince, {value}) or contains(City, {value}) or cont
 
 > **Note:** By default, each input is treated as an independent {and} clause which are strung together to create a valid RESO query.
 
-#### Example Search Form
+##### Example Search Form
 
 The following example contains markup which will generate a form having the following capabilities:
 
@@ -312,7 +379,7 @@ We used [Bulma.io](https://bulma.io/) in this example, but the above markup will
 
 [Search Form](screenshots/search-form.png "Search Form")
 
-### Search Pagination
+#### Search Pagination
 
 Because the Rets Rabbit plugin fetches data from an outside data source, it's not possible to use the native Craft pagination tag. We still believe it is very important to have the ability to paginate your results, so we created a special `rrPaginate` tag which works and looks like the native `paginate` tag in many ways.
 
@@ -320,13 +387,13 @@ Because the Rets Rabbit plugin fetches data from an outside data source, it's no
 {% rrPaginate searchCriteria as pageInfo, viewModel %}
 ```
 
-#### Parameters
+##### Parameters
 
 * [searchCriteria](#searchcriteria) - An instance of `SearchCriteriaModel`
 * pageInfo - `craft\web\twig\variables\Paginate` just like with the native `pagination` tag
 * viewModel - A view model instance containing possible search results or errors from the API
 
-#### SearchCriteria
+##### SearchCriteria
 
 The main difference in our `rrPaginate` tag compared to the native `paginate` tag is that it expects a `SearchCriteriaModel` 
 as the first parameter. You can get an instance of a search criteria model in the following manner.
@@ -358,7 +425,7 @@ Once you have an instance of the criteria model, you can build your query in a f
 * orderBy($field, $dir) - Order the results 
 * countBy($cacheType) - Specify the type of total results query for the API to run. Valid values are either 'exact' or 'estimated'. Uses 'estimated' by default.
 
-#### Complete Example
+##### Complete Example
 
 ```html
 {% set searchId = craft.app.request.getSegment(3) %}
@@ -456,7 +523,7 @@ We used [Bulma.io](https://bulma.io/) in this example, but the above markup will
 
 ### Other Variables
 
-Aside from the `PropertiesVariable`, there are a couple of other variables you have access to in your templates.
+Aside from `PropertiesVariable` & `OpenHousesVariable`, there are a couple of other variables you have access to in your templates.
 
 * SearchesVariable - `craft.retsRabbit.searches`
 
