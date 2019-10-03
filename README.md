@@ -30,15 +30,15 @@ help speed up the response time if you specifically select the fields you will n
 **$cacheDuration** - Specify how long you would like the results cached for in seconds. The default is one hour.
 
 ```html
-{% set viewModel = craft.retsRabbit.openHouses.find('123abc', {'$select': 'ListPrice'}, true) %}
+{% set viewModel = craft.retsRabbit.openHouses.find('OpenHouseId', {'$select': 'OpenHouseId'}, true) %}
 
 {% if viewModel.hasErrors() %}
     {# An error occurred, let the user know #}
 {% elseif not viewModel.hasData() %}
     {# No data returned from request #}
 {% else %}
-    {% set open_house = viewModel.data %}
-    {{open_house.ListPrice}}
+    {% set openHouse = viewModel.data %}
+    {{openHouse.OpenHouseId}}
 {% endif %}
 
 ```
@@ -54,9 +54,7 @@ help speed up the response time if you specifically select the fields you will n
 
 ```html
 {% set viewModel = craft.retsRabbit.openHouses.query({
-    '$select': 'ListPrice',
-    '$filter': 'ListPrice ge 150000 and ListPrice le 175000',
-    '$orderby': 'ListPrice',
+    '$select': 'OpenHouseId, OpenHouseDate, OpenHouseStartTime, OpenHouseEndTime',
     '$top': 12
 }) %}
 
@@ -65,14 +63,22 @@ help speed up the response time if you specifically select the fields you will n
 {% elseif not viewModel.hasData() %}
     {# No data returned in response #}
 {% else %}
-    {% set open_houses = viewModel.data %}
-    {% for open_house in open_houses %}
+    {% set openHouses = viewModel.data %}
+    {% for openHouse in openHouses %}
         <div class="card">
             <div class="card-header">
-                {{open_house.ListingId}}
+                {{openHouse.OpenHouseId}}
             </div>
             <div class="card-content">
-                {{open_house.ListPrice}}
+                <div>
+                    <date>{{ openHouse.OpenHouseDate }}</date>
+                </div>
+                <div>
+                    <date>{{ openHouse.OpenHouseStartTime }}</date>
+                </div>
+                <div>
+                    <date>{{ openHouse.OpenHouseEndTime }}</date>
+                </div>
             </div>
         </div>
     {% endfor %}
